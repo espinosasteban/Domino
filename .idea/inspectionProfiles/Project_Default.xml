@@ -1,0 +1,36 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="Annotator" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
+    <inspection_tool class="DuplicatedCode" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="InconsistentLineSeparators" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="InjectedReferences" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
+    <inspection_tool class="LongLine" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="ProblematicWhitespace" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyChainedComparisonsInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoreConstantInTheMiddle" value="true" />
+    </inspection_tool>
+    <inspection_tool class="PyCompatibilityInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ourVersions">
+        <value>
+          <list size="2">
+            <item index="0" class="java.lang.String" itemvalue="2.7" />
+            <item index="1" class="java.lang.String" itemvalue="3.11" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyPep8Inspection" enabled="true" level="TYPO" enabled_by_default="true" />
+    <inspection_tool class="PyPep8NamingInspection" enabled="false" level="TYPO" enabled_by_default="false" />
+    <inspection_tool class="PyRedundantParenthesesInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyShadowingNamesInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="RedundantSuppression" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
+    <inspection_tool class="SpellCheckingInspection" enabled="false" level="TYPO" enabled_by_default="false">
+      <option name="processCode" value="true" />
+      <option name="processLiterals" value="true" />
+      <option name="processComments" value="true" />
+    </inspection_tool>
+    <inspection_tool class="SyntaxError" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
+    <inspection_tool class="TodoComment" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+  </profile>
+</component>
