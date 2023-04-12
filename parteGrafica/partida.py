@@ -48,16 +48,8 @@ class GameDisplay:
             posicion_y = 700
             separacion = 10
 
-            fichas = [
-                pygame.image.load(os.path.join(self.ruta_imagenes,"ficha_0_1.png")),
-                pygame.image.load(os.path.join(self.ruta_imagenes,"ficha_1_1.png")),
-                pygame.image.load(os.path.join(self.ruta_imagenes,"ficha_2_1.png")),
-                pygame.image.load(os.path.join(self.ruta_imagenes,"ficha_3_1.png")),
-                pygame.image.load(os.path.join(self.ruta_imagenes, "ficha_4_1.png")),
-                pygame.image.load(os.path.join(self.ruta_imagenes, "ficha_5_1.png")),
-                pygame.image.load(os.path.join(self.ruta_imagenes, "ficha_6_1.png")),
-            ]
 
+            fichas = [pygame.image.load(os.path.join(self.ruta_imagenes, f"ficha_{i}_1.png")) for i in range(7)]
             for ficha in fichas:
                 ficha_rotada = pygame.transform.rotate(ficha, 90)
 
