@@ -1,4 +1,6 @@
 import os
+from logica.ficha import Ficha
+from logica.tablero import Tablero
 
 import pygame
 
@@ -6,16 +8,16 @@ import pygame
 class GameDisplay:
 
 
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
+    def __init__(self, ancho, alto):
+        self.ancho = ancho
+        self.alto = alto
         self.ruta_imagenes = os.path.join(os.path.dirname(__file__), "imagenes")
 
         # Inicializar Pygame
         pygame.init()
 
         # Crear la ventana del juego
-        self.screen = pygame.display.set_mode((width, height))
+        self.screen = pygame.display.set_mode((ancho, alto))
 
         # Establecer el título de la ventana
         pygame.display.set_caption("Mi Juego")
@@ -26,8 +28,21 @@ class GameDisplay:
         # Establecer el estado de la ventana a "abierto"
         self.is_running = True
 
+
+    def ponerFichaTablero(self, ficha: Ficha):
+        self.screen.blit(ficha.getImagen(), (self.ancho/2, self.alto/2))
+
+
+
     def run(self):
         # Ciclo principal del juego
+        tablero = Tablero()
+        tablero.generar_fichas()
+        jugador_saque = tablero.encontrarSaque()
+
+
+
+
         while self.is_running:
             # Procesar eventos
             for event in pygame.event.get():
@@ -38,37 +53,9 @@ class GameDisplay:
 
             # Dibujar el fondo
             self.screen.fill(self.background_color)
-
-            ancho_total_fichas = (128 * 7)
-
-            # Calcula la posición del primer sprite
-            posicion_x = (self.width - ancho_total_fichas) / 2
+            self.ponerFichaTablero(jugador_saque.buscarFicha(6,6))
 
 
-            posicion_y = 700
-            separacion = 10
-
-
-            fichas = [pygame.image.load(os.path.join(self.ruta_imagenes, f"ficha_0_{i}.png")) for i in range(0,7)]
-            for ficha in fichas:
-                ficha_rotada = pygame.transform.rotate(ficha, 90)
-
-                self.screen.blit(ficha_rotada, (posicion_x, posicion_y))
-                posicion_x += 128 + separacion
-
-
-
-
-
-
-
-
-
-
-
-
-
-                # Actualiza la posición x para la siguiente ficha
 
 
             # Actualizar la pantalla
