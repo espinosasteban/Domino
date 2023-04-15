@@ -1,6 +1,4 @@
-#from tablero import Tablero
-from collections import deque
-from ficha import Ficha
+
 
 class Jugador:
     def __init__(self, nombre, fichas): #Mirar si poner fichas en el constructor
@@ -44,9 +42,10 @@ class Jugador:
                 agregar = True
             if valores[-1] == valor_der:
                 der = True
-                agregar = True 
+                agregar = True
+
             if agregar: # Se agrega una tupla a la lista, con el valor de la ficha que se puede colocar y los lados en que se puede colocar 
-                listaValida.append((valores, (izq, der)))
+                listaValida.append((ficha, (izq, der)))
             
         return listaValida
 
