@@ -31,7 +31,7 @@ class Tablero:
                 fichas_totales.remove(elemento)
 
     @classmethod
-    def getJugadores(cls):
+    def getJugadores(cls)-> list:
         return cls._jugadores
 
     @classmethod
