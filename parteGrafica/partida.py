@@ -1,6 +1,7 @@
 import os
 from collections import deque
-
+from logica.tablero import Tablero
+from random import randint
 
 import pygame
 
@@ -13,7 +14,7 @@ class GameDisplay:
         ficha_transformada = pygame.transform.scale(imagen_ficha, (int(imagen_ficha.get_width() / 4), int(imagen_ficha.get_height() / 4)))
         if len(tablero_fisico) == 0:
             #si el tablero está vacío, se coloca en el centro
-            print("hola1")
+
 
             #se muestra en el tablero en unas coordenadas que más o menos sea la mitad
             #(el centrado lo hice con prueba y error)
@@ -82,11 +83,24 @@ class GameDisplay:
         self.is_running = True
 
     def run(self):
+
         tablero_fisico = deque()  # tablero que representa el juego (físicamente)
+        tablero_logico = deque() #tablero que representa el juego (logicamente)
 
         # generación de fichas (PRUEBA)
-        fichas = [pygame.image.load(os.path.join(self.ruta_imagenes, f"ficha_{i}_{j}.png")) for i in range(7) for j in
-                  range(i, 7)]
+        partida = Tablero()
+        partida.generar_fichas()
+
+
+
+
+        jugador_saque = partida.encontrarSaque()
+
+        ficha_saque = jugador_saque.buscarFicha(6,6)
+        jugador_saque.eliminarFicha(ficha_saque)
+
+        jugador_principal = partida.getJugadores()[0]
+
 
         # GENERACIÓN  DE BOTONES PARA PRUEBAS
         boton_superficie = pygame.Surface((100, 50))
@@ -102,34 +116,45 @@ class GameDisplay:
 
         # crear el rectangulo del botón izquierdo
 
-        boton_superficie_izq = pygame.Surface((100, 50))
-        boton_superficie_izq.fill((255, 255, 255))
-
-        boton_rect_izq = boton_superficie_izq.get_rect()
-        boton_rect_izq.x = 40 + 110  # Establecer la coordenada x del botón
-        boton_rect_izq.y = 40  # Establecer la coordenada y del botón
-
-        self.screen.blit(boton_superficie_izq, boton_rect_izq)
-        pygame.display.update()
-
         # generación de fichas POV jugador
-        ancho_total_fichas = (128 * 7)
-        posicion_x = (self.ancho - ancho_total_fichas) / 2
+        def generar_pov_jugador(fichas_jugador_principal):
 
-        posicion_y = 700
-        separacion = 10
-        for j in range(0, 7):
-            ficha_rotada = pygame.transform.rotate(fichas[j], 90)
+            ancho_total_fichas = (128 * 7)
+            posicion_x = (self.ancho - ancho_total_fichas) / 2
 
-            self.screen.blit(ficha_rotada, (posicion_x, posicion_y))
-            posicion_x += 128 + separacion
-            fichas.remove(fichas[j])
+            posicion_y = 700
+            separacion = 10
+            fondo = pygame.Surface((ancho_total_fichas+128, 256))
+            fondo.fill((0, 128, 10))
+            self.screen.blit(fondo, (posicion_x, posicion_y))
+
+            for j in range(0, len(fichas_jugador_principal)):
+                print(j)
+                ficha_rotada = pygame.transform.rotate(fichas_jugador_principal[j].getImagen(), 90)
+
+                self.screen.blit(ficha_rotada, (posicion_x, posicion_y))
+                posicion_x += 128 + separacion
 
         # Ciclo principal del juego
-        while self.is_running:
 
+        self.ponerFicha(tablero_fisico, ficha_saque.getImagen(), "derecho")
+        tablero_logico.append(ficha_saque)
+        generar_pov_jugador(jugador_principal.getFichas())
+        while self.is_running:
+            fichas_validas = jugador_principal.determinarFichasValidas(tablero_logico)
+            lado = []
             # Procesar eventos
             for event in pygame.event.get():
+                if len(fichas_validas) > 0:
+                    tupla_condicion = fichas_validas[randint(0,len(fichas_validas)-1)][1]
+                    if tupla_condicion[0]:
+                        lado.append("izquierdo")
+                    if tupla_condicion[1]:
+                        lado.append("derecho")
+
+
+
+
 
                 if event.type == pygame.QUIT:
                     # Si el usuario cierra la ventana, establecer el estado a "cerrado"
@@ -137,13 +162,15 @@ class GameDisplay:
 
                 # si le doy click al boton de la izquierda, entonces ponerficha a la izquierda
                 elif event.type == pygame.MOUSEBUTTONDOWN and boton_rect.collidepoint(event.pos):
-                    self.ponerFicha(tablero_fisico, fichas[0], "izquierdo")
-                    fichas.remove(fichas[0])
+                    if len(fichas_validas) > 0:
 
-                # si le doy click al boton de la derecha, entonces ponerficha a la derecha
-                elif event.type == pygame.MOUSEBUTTONDOWN and boton_rect_izq.collidepoint(event.pos):
-                    self.ponerFicha(tablero_fisico, fichas[0], "derecho")
-                    fichas.remove(fichas[0])
+                        self.ponerFicha(tablero_fisico, fichas_validas[0][0].getImagen(), lado[randint(0,1)])
+                        tablero_logico.append(fichas_validas[0][0])
+                        jugador_principal.getFichas().remove(fichas_validas[0][0])
+                        generar_pov_jugador(jugador_principal.getFichas())
+
+
+
 
             # Dibujar el fondo
 
