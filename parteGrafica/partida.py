@@ -10,11 +10,6 @@ import pygame
 
 class GameDisplay:
 
-    GREEN = (0, 255, 0)
-    RED = (255, 0, 0)
-
-
-
     def ponerFicha(self, tablero_fisico: deque, imagen_ficha, lado):
 
         #se transforma la imagen para que sea de menor tamaño
@@ -134,34 +129,101 @@ class GameDisplay:
             fondo.fill((0, 100, 10))
             self.screen.blit(fondo, (posicion_x, posicion_y - 30))
 
+            #Botones
+            boton_lefts = [] #lista con los botones
+            boton_left = pygame.Rect(0, 0, 20, 20)
+            boton_right = pygame.Rect(0, 0, 20, 20)
+
             for j in range(0, len(fichas_jugador_principal)):
 
 
                 ficha_rotada = pygame.transform.rotate(fichas_jugador_principal[j].getImagen(), 90)
                 if fichas_jugador_principal[j].esValida(tablero_logico):
                     self.screen.blit(ficha_rotada, (posicion_x, posicion_y - 30))
+                    
+                    #condiciones de mostrar
+                    #utilzando el metodo determinarFichasValidas y mirando si el de la derecha, el de la izquierda o ambos son validos
+                    #se pintan los botones y se les pone para escoger donde poner la ficha
+
+                    # Crear boton y agregarlo a la lista
+                    #izquierdo
+                    boton_left.center = (posicion_x + 20, posicion_y - 70)
+                    boton_lefts.append(boton_left)
+
+                    # Color del botón
+                    boton_color = (255, 0, 0) if not fichas_jugador_principal[j].esValida(tablero_logico) else (0, 255, 0)
+
+
                     # Dibuja el botón en la pantalla
-                    button_rect = pygame.Rect(0, 0, 20, 20)
-                    button_rect.center = (posicion_x + 10, posicion_y - 70)
-                    pygame.draw.rect(self.screen, (0,255,0), button_rect)
-                    font = pygame.font.SysFont(None, 24)
-                    text = font.render("", True, (255, 255, 255))
-                    text_rect = text.get_rect(center=button_rect.center)
-                    self.screen.blit(text, text_rect)
+                    pygame.draw.rect(self.screen, boton_color, boton_left)
+
+                    #derecho
+                    boton_right.center = (posicion_x + 80, posicion_y - 70)
+                    boton_lefts.append(boton_right)
+
+                    # Color del botón
+                    boton_color = (255, 0, 0) if not fichas_jugador_principal[j].esValida(tablero_logico) else (0, 255, 0)
+                    # Dibuja el botón en la pantalla
+                    pygame.draw.rect(self.screen, boton_color, boton_right)
+
+                    #verificar click
+                    for event in pygame.event.get():
+                        if event.type == pygame.MOUSEBUTTONDOWN:
+                            pos = pygame.mouse.get_pos()
+                            for boton in boton_lefts:
+                                if boton.collidepoint(pos):
+                                    boton_color = (0, 0, 0)
+# Dibuja el botón en la pantalla con el nuevo color
+                    pygame.draw.rect(self.screen, boton_color, boton_left)
+                    pygame.draw.rect(self.screen, boton_color, boton_right)
+
                 else:
                     self.screen.blit(ficha_rotada, (posicion_x, posicion_y))
-                    # Dibuja el botón en la pantalla
-                    button_rect = pygame.Rect(0, 0, 20, 20)
-                    button_rect.center = (posicion_x + 10, posicion_y - 70)
-                    pygame.draw.rect(self.screen, (255,0,0), button_rect)
-                    font = pygame.font.SysFont(None, 24)
-                    text = font.render("", True, (255, 255, 255))
-                    text_rect = text.get_rect(center=button_rect.center)
-                    self.screen.blit(text, text_rect)
-                posicion_x += 128 + separacion
-            button_rect = pygame.Rect(0, 0, 100, 50)
-            button_rect.center = (self.ancho / 2, posicion_y - 80)
 
+                    # Crear boton y agregarlo a la lista
+                    #izquierdo
+                    boton_left.center = (posicion_x + 20, posicion_y - 70)
+                    boton_lefts.append(boton_left)
+
+                    # Color del botón
+                    boton_color = (255, 0, 0) if not fichas_jugador_principal[j].esValida(tablero_logico) else (0, 255, 0)
+
+
+                    # Dibuja el botón en la pantalla
+                    pygame.draw.rect(self.screen, boton_color, boton_left)
+
+                    #derecho
+                    boton_right.center = (posicion_x + 80, posicion_y - 70)
+                    boton_lefts.append(boton_right)
+
+                    # Color del botón
+                    boton_color = (255, 0, 0) if not fichas_jugador_principal[j].esValida(tablero_logico) else (0, 255, 0)
+
+
+                    # Dibuja el botón en la pantalla
+                    pygame.draw.rect(self.screen, boton_color, boton_right)
+
+                    #verificar click
+                    for event in pygame.event.get():
+                        if event.type == pygame.MOUSEBUTTONDOWN:
+                            pos = pygame.mouse.get_pos()
+                            for boton in boton_lefts:
+                                if boton.collidepoint(pos):
+                                    boton_color = (0, 0, 0)
+# Dibuja el botón en la pantalla con el nuevo color
+                    pygame.draw.rect(self.screen, boton_color, boton_left)
+                    pygame.draw.rect(self.screen, boton_color, boton_right)
+                posicion_x += 128 + separacion
+            
+            # Verificar clic en los botones - Arreglar y conectar para ver si se pone a la derecha o a la izquierda
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONUP:
+                    mouse_pos = pygame.mouse.get_pos()
+
+                    # Verifica si el clic está dentro de los límites de algún botón
+                    for i, boton_left in enumerate(boton_lefts):
+                        if boton_left.collidepoint(mouse_pos):
+                            pygame.draw.rect(self.screen, (255,255,0), boton_left) #intenté pintarlo pero no dió
         # Ciclo principal del juego
 
         self.ponerFicha(tablero_fisico, ficha_saque.getImagen(), "derecho")
