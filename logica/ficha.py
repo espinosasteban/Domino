@@ -10,3 +10,7 @@ class Ficha:
     def getImagen(self):
         return self._imagen
 
+    def voltearFicha(self):
+        self._valor1, self._valor2 = self._valor2, self._valor1
+
+    
