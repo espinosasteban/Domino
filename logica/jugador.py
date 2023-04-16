@@ -49,6 +49,7 @@ class Jugador:
             
         return listaValida
 
+    #def seleccionarFicha(self.)
 '''
 ##Caso de prueba
 

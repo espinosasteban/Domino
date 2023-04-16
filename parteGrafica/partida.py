@@ -10,7 +10,8 @@ import pygame
 
 class GameDisplay:
 
-
+    GREEN = (0, 255, 0)
+    RED = (255, 0, 0)
 
 
 
@@ -139,9 +140,27 @@ class GameDisplay:
                 ficha_rotada = pygame.transform.rotate(fichas_jugador_principal[j].getImagen(), 90)
                 if fichas_jugador_principal[j].esValida(tablero_logico):
                     self.screen.blit(ficha_rotada, (posicion_x, posicion_y - 30))
+                    # Dibuja el botón en la pantalla
+                    button_rect = pygame.Rect(0, 0, 20, 20)
+                    button_rect.center = (posicion_x + 10, posicion_y - 70)
+                    pygame.draw.rect(self.screen, (0,255,0), button_rect)
+                    font = pygame.font.SysFont(None, 24)
+                    text = font.render("", True, (255, 255, 255))
+                    text_rect = text.get_rect(center=button_rect.center)
+                    self.screen.blit(text, text_rect)
                 else:
                     self.screen.blit(ficha_rotada, (posicion_x, posicion_y))
+                    # Dibuja el botón en la pantalla
+                    button_rect = pygame.Rect(0, 0, 20, 20)
+                    button_rect.center = (posicion_x + 10, posicion_y - 70)
+                    pygame.draw.rect(self.screen, (255,0,0), button_rect)
+                    font = pygame.font.SysFont(None, 24)
+                    text = font.render("", True, (255, 255, 255))
+                    text_rect = text.get_rect(center=button_rect.center)
+                    self.screen.blit(text, text_rect)
                 posicion_x += 128 + separacion
+            button_rect = pygame.Rect(0, 0, 100, 50)
+            button_rect.center = (self.ancho / 2, posicion_y - 80)
 
         # Ciclo principal del juego
 
