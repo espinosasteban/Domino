@@ -2,6 +2,8 @@ import os
 from collections import deque
 from logica.tablero import Tablero
 from random import randint
+from logica.jugador import Jugador
+from logica.rival import Rival
 
 import pygame
 
@@ -83,7 +85,6 @@ class GameDisplay:
         self.is_running = True
 
     def run(self):
-
         tablero_fisico = deque()  # tablero que representa el juego (físicamente)
         tablero_logico = deque() #tablero que representa el juego (logicamente)
 
@@ -125,7 +126,7 @@ class GameDisplay:
             posicion_y = 700
             separacion = 10
             fondo = pygame.Surface((ancho_total_fichas+128, 256))
-            fondo.fill((0, 128, 10))
+            fondo.fill((0, 100, 10))
             self.screen.blit(fondo, (posicion_x, posicion_y))
 
             for j in range(0, len(fichas_jugador_principal)):
@@ -140,21 +141,29 @@ class GameDisplay:
         self.ponerFicha(tablero_fisico, ficha_saque.getImagen(), "derecho")
         tablero_logico.append(ficha_saque)
         generar_pov_jugador(jugador_principal.getFichas())
+
+
         while self.is_running:
             fichas_validas = jugador_principal.determinarFichasValidas(tablero_logico)
-            lado = []
+            print(len(fichas_validas))
+            if len(fichas_validas) > 0:
+                datos_ficha = fichas_validas[randint(0,len(fichas_validas)-1)]
+            
+
+            for ficha_logica in tablero_logico:
+                print(ficha_logica.getValores())
+
             # Procesar eventos
             for event in pygame.event.get():
+                lado = []
                 if len(fichas_validas) > 0:
-                    tupla_condicion = fichas_validas[randint(0,len(fichas_validas)-1)][1]
+                    tupla_condicion = datos_ficha[1]
                     if tupla_condicion[0]:
                         lado.append("izquierdo")
                     if tupla_condicion[1]:
                         lado.append("derecho")
-
-
-
-
+                    print(lado)
+                
 
                 if event.type == pygame.QUIT:
                     # Si el usuario cierra la ventana, establecer el estado a "cerrado"
@@ -162,11 +171,28 @@ class GameDisplay:
 
                 # si le doy click al boton de la izquierda, entonces ponerficha a la izquierda
                 elif event.type == pygame.MOUSEBUTTONDOWN and boton_rect.collidepoint(event.pos):
+                    
+                    
                     if len(fichas_validas) > 0:
+                        mi_ficha = datos_ficha[0]
+                        lado_str = lado[randint(0,len(lado)-1)]
+                        if lado_str == "derecho":
+                            if mi_ficha.getValores()[0] != tablero_logico[-1].getValores()[-1]:
+                                mi_ficha.voltearFicha()
+                            self.ponerFicha(tablero_fisico, mi_ficha.getImagen(), "derecho" )
+                            tablero_logico.append(mi_ficha)
 
-                        self.ponerFicha(tablero_fisico, fichas_validas[0][0].getImagen(), lado[randint(0,1)])
-                        tablero_logico.append(fichas_validas[0][0])
-                        jugador_principal.getFichas().remove(fichas_validas[0][0])
+
+                        
+                        elif lado_str == "izquierdo":
+                            if mi_ficha.getValores()[-1] != tablero_logico[0].getValores()[0]:
+                                mi_ficha.voltearFicha()
+
+                            self.ponerFicha(tablero_fisico, mi_ficha.getImagen(), "izquierdo")
+                            tablero_logico.appendleft(mi_ficha)
+
+                        
+                        jugador_principal.getFichas().remove(mi_ficha)
                         generar_pov_jugador(jugador_principal.getFichas())
 
 
