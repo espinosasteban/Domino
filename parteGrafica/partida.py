@@ -10,6 +10,10 @@ import pygame
 
 class GameDisplay:
 
+
+
+
+
     def ponerFicha(self, tablero_fisico: deque, imagen_ficha, lado):
 
         #se transforma la imagen para que sea de menor tamaño
@@ -125,15 +129,18 @@ class GameDisplay:
 
             posicion_y = 700
             separacion = 10
-            fondo = pygame.Surface((ancho_total_fichas+128, 256))
+            fondo = pygame.Surface((ancho_total_fichas+128, 300))
             fondo.fill((0, 100, 10))
-            self.screen.blit(fondo, (posicion_x, posicion_y))
+            self.screen.blit(fondo, (posicion_x, posicion_y - 30))
 
             for j in range(0, len(fichas_jugador_principal)):
-                print(j)
-                ficha_rotada = pygame.transform.rotate(fichas_jugador_principal[j].getImagen(), 90)
 
-                self.screen.blit(ficha_rotada, (posicion_x, posicion_y))
+
+                ficha_rotada = pygame.transform.rotate(fichas_jugador_principal[j].getImagen(), 90)
+                if fichas_jugador_principal[j].esValida(tablero_logico):
+                    self.screen.blit(ficha_rotada, (posicion_x, posicion_y - 30))
+                else:
+                    self.screen.blit(ficha_rotada, (posicion_x, posicion_y))
                 posicion_x += 128 + separacion
 
         # Ciclo principal del juego
@@ -145,24 +152,24 @@ class GameDisplay:
 
         while self.is_running:
             fichas_validas = jugador_principal.determinarFichasValidas(tablero_logico)
-            print(len(fichas_validas))
-            if len(fichas_validas) > 0:
-                datos_ficha = fichas_validas[randint(0,len(fichas_validas)-1)]
-            
+            if len(fichas_validas) == 0:
+                rival = partida.getJugadores()[randint(1,3)]
 
-            for ficha_logica in tablero_logico:
-                print(ficha_logica.getValores())
+            elif len(fichas_validas) > 0:
+                datos_ficha = fichas_validas[randint(0,len(fichas_validas)-1)]
+
+            lado = []
+            if len(fichas_validas) > 0:
+                tupla_condicion = datos_ficha[1]
+                if tupla_condicion[0]:
+                    lado.append("izquierdo")
+                if tupla_condicion[1]:
+                    lado.append("derecho")
+
 
             # Procesar eventos
             for event in pygame.event.get():
-                lado = []
-                if len(fichas_validas) > 0:
-                    tupla_condicion = datos_ficha[1]
-                    if tupla_condicion[0]:
-                        lado.append("izquierdo")
-                    if tupla_condicion[1]:
-                        lado.append("derecho")
-                    print(lado)
+
                 
 
                 if event.type == pygame.QUIT:
@@ -179,11 +186,9 @@ class GameDisplay:
                         if lado_str == "derecho":
                             if mi_ficha.getValores()[0] != tablero_logico[-1].getValores()[-1]:
                                 mi_ficha.voltearFicha()
-                            self.ponerFicha(tablero_fisico, mi_ficha.getImagen(), "derecho" )
+                            self.ponerFicha(tablero_fisico, mi_ficha.getImagen(), "derecho")
                             tablero_logico.append(mi_ficha)
 
-
-                        
                         elif lado_str == "izquierdo":
                             if mi_ficha.getValores()[-1] != tablero_logico[0].getValores()[0]:
                                 mi_ficha.voltearFicha()
@@ -191,7 +196,6 @@ class GameDisplay:
                             self.ponerFicha(tablero_fisico, mi_ficha.getImagen(), "izquierdo")
                             tablero_logico.appendleft(mi_ficha)
 
-                        
                         jugador_principal.getFichas().remove(mi_ficha)
                         generar_pov_jugador(jugador_principal.getFichas())
 
