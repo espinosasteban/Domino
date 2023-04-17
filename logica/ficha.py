@@ -25,6 +25,9 @@ class Ficha:
 
     def esValida(self, tablero_logico):
         valida = False
+        izq = False
+        der = False
+
         valor_izq = tablero_logico[0].getValores()[0]  # El valor izquierdo de la ficha mas a la izquierda
         valor_der = tablero_logico[-1].getValores()[-1]
 
@@ -32,15 +35,19 @@ class Ficha:
 
         # Comprobar si los valores de la ficha son iguales a los valores extremos del tablero
         if valores[0] == valor_izq:
+            izq = True
             valida = True
         if valores[0] == valor_der:
+            der = True
             valida = True
         if valores[-1] == valor_izq:
+            izq = True
             valida = True
         if valores[-1] == valor_der:
+            der = True
             valida = True
 
-        return valida
+        return (valida, (izq, der))
 
 
     
