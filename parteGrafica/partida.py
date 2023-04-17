@@ -133,9 +133,6 @@ class GameDisplay:
             #Botones
              #lista con los botones
 
-            boton_left = pygame.Rect(0, 0, 20, 20)
-            boton_right = pygame.Rect(0, 0, 20, 20)
-
             for j in range(0, len(fichas_jugador_principal)):
 
                 ficha_dibujar = fichas_jugador_principal[j]
@@ -152,6 +149,9 @@ class GameDisplay:
                     #se pintan los botones y se les pone para escoger donde poner la ficha
 
                     # Crear boton y agregarlo a la lista
+                    boton_left = pygame.Rect(0, 0, 20, 20)
+                    boton_right = pygame.Rect(0, 0, 20, 20)
+
 
                     print(ficha_dibujar.esValida(tablero_logico)[1])
                     #izquierdo
@@ -242,11 +242,13 @@ class GameDisplay:
                 # si le doy click al boton de la izquierda, entonces ponerficha a la izquierda
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pos = pygame.mouse.get_pos()
-                    for boton in self.lista_botones:
-                        if boton.collidepoint(pos):
-                            print("hola")
+                    for i, boton_left in enumerate(self.lista_botones):
+                        if boton_left.collidepoint(pos):
+                            print("Boton clickeado")
 
-                elif event.type == pygame.MOUSEBUTTONDOWN and boton_rect.collidepoint(event.pos):
+        # Ciclo principal del juego
+
+                if event.type == pygame.MOUSEBUTTONDOWN and boton_rect.collidepoint(event.pos):
                     
                     
                     if len(fichas_validas) > 0:
