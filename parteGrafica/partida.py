@@ -147,31 +147,40 @@ class GameDisplay:
                     #se pintan los botones y se les pone para escoger donde poner la ficha
 
                     # Crear boton y agregarlo a la lista
-                    boton_left = pygame.Rect(0, 0, 20, 20)
-                    boton_right = pygame.Rect(0, 0, 20, 20)
-                    
+                    boton_left = pygame.Rect(50, 50, 30, 30)
+                    boton_right = pygame.Rect(50, 50, 30, 30)
+
+                    # Flecha hacia la izquierda
+                    flecha_izquierda = [(0, 10), (10, 0), (10, 5), (20, 5), (20, 15), (10, 15), (10, 20)]
+
+                    # Flecha hacia la derecha
+                    flecha_derecha = [(20, 10), (10, 0), (10, 5), (0, 5), (0, 15), (10, 15), (10, 20)]
+
+
                     print(ficha_dibujar.esValida(tablero_logico)[1])
                     #izquierdo
                     if (ficha_dibujar.esValida(tablero_logico)[1][0]):
-                        boton_color_izq = (0,255,0)
+                        pygame.draw.polygon(self.screen, (0, 255, 0), [(posicion_x + 10 + x, posicion_y - 70 + y) for x, y in flecha_izquierda])
+                        #pygame.draw.rect(self.screen, (0, 255, 0), flecha_izquierda, 3)
                     else:
-                        boton_color_izq = (255, 0, 0)
-
+                        pygame.draw.polygon(self.screen, (255, 0, 0), [(posicion_x + 10 + x, posicion_y - 70 + y) for x, y in flecha_izquierda])
+                        #pygame.draw.rect(self.screen, (255, 0, 0), flecha_izquierda, 3)
                     #izquierdo
-                    boton_left.center = (posicion_x + 20, posicion_y - 70)
+                    boton_left.center = (posicion_x + 20, posicion_y - 60)
                     self.lista_botones.append(boton_left)
-                    pygame.draw.rect(self.screen, boton_color_izq, boton_left)
+                    #pygame.draw.rect(self.screen, boton_color_izq, boton_left)
 
                     if (ficha_dibujar.esValida(tablero_logico)[1][1]):
-                        boton_color_der = (0, 255, 0)
+                        pygame.draw.polygon(self.screen, (0, 255, 0), [(posicion_x + 50 + x, posicion_y - 70 + y) for x, y in flecha_derecha])
+                        #pygame.draw.rect(self.screen, (0, 255, 0), flecha_derecha, 3)
                     else:
-                        boton_color_der = (255,0,0)
-
+                        pygame.draw.polygon(self.screen, (255, 0, 0), [(posicion_x + 50 + x, posicion_y - 70 + y) for x, y in flecha_derecha])
+                        #pygame.draw.rect(self.screen, (0, 255, 0), flecha_derecha, 3)
                     #derecho
-                    boton_right.center = (posicion_x + 80, posicion_y - 70)
+                    boton_right.center = (posicion_x + 55, posicion_y - 60)
                     self.lista_botones.append(boton_right)
 
-                    pygame.draw.rect(self.screen, boton_color_der, boton_right)
+                    #pygame.draw.rect(self.screen, boton_color_der, boton_right)
 
                     #verificar click
                     for event in pygame.event.get():
@@ -181,8 +190,8 @@ class GameDisplay:
                                 if boton.collidepoint(pos):
                                     boton_color = (0, 0, 0)
 # Dibuja el botón en la pantalla con el nuevo color
-                    pygame.draw.rect(self.screen, boton_color_izq, boton_left)
-                    pygame.draw.rect(self.screen, boton_color_der, boton_right)
+                    #pygame.draw.rect(self.screen, boton_color_izq, boton_left)
+                    #pygame.draw.rect(self.screen, boton_color_der, boton_right)
 
                 else:
                     self.screen.blit(ficha_rotada, (posicion_x, posicion_y))
