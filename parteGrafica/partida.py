@@ -88,6 +88,9 @@ class GameDisplay:
     def run(self):
         tablero_fisico = deque()  # tablero que representa el juego (físicamente)
         tablero_logico = deque() #tablero que representa el juego (logicamente)
+        pygame.mixer.init()
+        pygame.mixer.music.load(os.path.join(os.path.dirname(__file__), "sonidos/background.mp3"))
+        pygame.mixer_music.play(-1)
 
         # generación de fichas (PRUEBA)
         partida = Tablero()
@@ -244,6 +247,13 @@ class GameDisplay:
         # Ciclo principal del juego
 
                 if event.type == pygame.MOUSEBUTTONDOWN and boton_rect.collidepoint(event.pos):
+                    seleccionar = pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), "sonidos/seleccionar_lado_derecho.mp3"))
+                    seleccionar.play()
+
+
+                    tirar = pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), "sonidos/tirar_ficha0.mp3"))
+                    tirar.play()
+
                     
                     
                     if len(fichas_validas) > 0:
@@ -274,4 +284,5 @@ class GameDisplay:
             pygame.display.update()
 
         # Salir de Pygame
+        pygame.mixer.music.stop()
         pygame.quit()
