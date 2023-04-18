@@ -142,8 +142,6 @@ class GameDisplay:
                 if ficha_dibujar.esValida(tablero_logico)[0]:
                     self.screen.blit(ficha_rotada, (posicion_x, posicion_y - 30))
 
-
-                    
                     #condiciones de mostrar
                     #utilzando el metodo determinarFichasValidas y mirando si el de la derecha, el de la izquierda o ambos son validos
                     #se pintan los botones y se les pone para escoger donde poner la ficha
@@ -151,8 +149,7 @@ class GameDisplay:
                     # Crear boton y agregarlo a la lista
                     boton_left = pygame.Rect(0, 0, 20, 20)
                     boton_right = pygame.Rect(0, 0, 20, 20)
-
-
+                    
                     print(ficha_dibujar.esValida(tablero_logico)[1])
                     #izquierdo
                     if (ficha_dibujar.esValida(tablero_logico)[1][0]):
@@ -196,17 +193,6 @@ class GameDisplay:
 # Dibuja el botón en la pantalla con el nuevo color
 
                 posicion_x += 128 + separacion
-            
-            # Verificar clic en los botones - Arreglar y conectar para ver si se pone a la derecha o a la izquierda
-            for event in pygame.event.get():
-                if event.type == pygame.MOUSEBUTTONUP:
-                    mouse_pos = pygame.mouse.get_pos()
-
-                    # Verifica si el clic está dentro de los límites de algún botón
-                    for i, boton_left in enumerate(self.lista_botones):
-                        if boton_left.collidepoint(mouse_pos):
-                            pygame.draw.rect(self.screen, (255,255,0), boton_left) #intenté pintarlo pero no dió
-        # Ciclo principal del juego
 
         self.ponerFicha(tablero_fisico, ficha_saque.getImagen(), "derecho")
         tablero_logico.append(ficha_saque)
