@@ -4,11 +4,16 @@ from logica.tablero import Tablero
 from random import randint
 from logica.jugador import Jugador
 from logica.rival import Rival
-
 import pygame
-
-
+ 
 class GameDisplay:
+    def dibujar(self, mi_ficha, tablero_logico, tablero_fisico, lado, v=[0,-1]):
+    #Reutilizacion de codigo, el valor por defecto de "v" permite la logica para el lado derecho.
+    #en caso de ser para el lado izquierdo, se pasa un array inverso
+        if mi_ficha.getValores()[v[0]] != tablero_logico[v[1]].getValores()[v[1]]:
+            mi_ficha.voltearFicha()
+        self.ponerFicha(tablero_fisico, mi_ficha.getImagen(), lado)
+        tablero_logico.append(mi_ficha)
 
     def ponerFicha(self, tablero_fisico: deque, imagen_ficha, lado):
 
@@ -29,18 +34,13 @@ class GameDisplay:
 
         else:
             #si ya hay una ficha en el tablero, entonces:
-
             #si la quiero poner a la derecha entonces mi ficha "anterior" es la ficha [-1] en el deque porque está
             #a la derecha del todo
             if lado == "derecho":
                 print("derecho")
-
                 ficha_derecha = tablero_fisico[-1]
                 x_anterior, y_anterior = ficha_derecha[1] # se obtiene la tupla con las coordenadas
                 print(x_anterior, y_anterior)
-
-
-
                 self.screen.blit(ficha_transformada, (x_anterior+int((270/4)),y_anterior)) # se dibuja la nueva ficha
                 #para dibujar en x, tengo que correrla el ancho de la ficha anterior (256/4) y sumarle el x de la anterior.
                 #coloco + 270 para darle un poco de espacio y que no esté tan pegada.
@@ -199,9 +199,6 @@ class GameDisplay:
                 else:
                     self.screen.blit(ficha_rotada, (posicion_x, posicion_y))
 
-
-
-
 # Dibuja el botón en la pantalla con el nuevo color
 
                 posicion_x += 128 + separacion
@@ -230,53 +227,40 @@ class GameDisplay:
 
             # Procesar eventos
             for event in pygame.event.get():
-
-                
-
                 if event.type == pygame.QUIT:
                     # Si el usuario cierra la ventana, establecer el estado a "cerrado"
                     self.is_running = False
-
                 # si le doy click al boton de la izquierda, entonces ponerficha a la izquierda
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pos = pygame.mouse.get_pos()
-                    for i, boton_left in enumerate(self.lista_botones):
-                        if boton_left.collidepoint(pos):
-                            print("Boton clickeado")
-
+                    for i, boton in enumerate(self.lista_botones):
+                        if boton.collidepoint(pos):
+                            mi_ficha = datos_ficha[0]
+                            if i == 0: 
+                                self.dibujar(mi_ficha, tablero_logico, tablero_fisico, "izquierdo", v=[-1,0])
+                                print("izquierdo")
+                            elif i == 1:
+                                self.dibujar(mi_ficha, tablero_logico, tablero_fisico, "derecho")
+                                print("derecho")
+                            jugador_principal.getFichas().remove(mi_ficha)
+                            generar_pov_jugador(jugador_principal.getFichas())
         # Ciclo principal del juego
 
                 if event.type == pygame.MOUSEBUTTONDOWN and boton_rect.collidepoint(event.pos):
                     seleccionar = pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), "sonidos/seleccionar_lado_derecho.mp3"))
                     seleccionar.play()
-
-
                     tirar = pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), "sonidos/tirar_ficha0.mp3"))
-                    tirar.play()
-
-                    
-                    
+                    tirar.play()                
                     if len(fichas_validas) > 0:
                         mi_ficha = datos_ficha[0]
                         lado_str = lado[randint(0,len(lado)-1)]
-                        if lado_str == "derecho":
-                            if mi_ficha.getValores()[0] != tablero_logico[-1].getValores()[-1]:
-                                mi_ficha.voltearFicha()
-                            self.ponerFicha(tablero_fisico, mi_ficha.getImagen(), "derecho")
-                            tablero_logico.append(mi_ficha)
-
-                        elif lado_str == "izquierdo":
-                            if mi_ficha.getValores()[-1] != tablero_logico[0].getValores()[0]:
-                                mi_ficha.voltearFicha()
-
-                            self.ponerFicha(tablero_fisico, mi_ficha.getImagen(), "izquierdo")
-                            tablero_logico.appendleft(mi_ficha)
+                        v_array = [0,-1]
+                        if lado_str == "izquierdo":
+                            v_array = [-1,0]
+                        self.dibujar(mi_ficha, tablero_logico, tablero_fisico, lado_str, v_array)
 
                         jugador_principal.getFichas().remove(mi_ficha)
                         generar_pov_jugador(jugador_principal.getFichas())
-
-
-
 
             # Dibujar el fondo
 
