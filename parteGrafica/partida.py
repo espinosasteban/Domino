@@ -14,7 +14,61 @@ class GameDisplay:
             mi_ficha.voltearFicha()
         self.ponerFicha(tablero_fisico, mi_ficha.getImagen(), lado)
         tablero_logico.append(mi_ficha)
+    
 
+    def posicionarFicha(self, ficha_rotada, posicion_x, posicion_y, ficha_dibujar, tablero_logico):
+        self.screen.blit(ficha_rotada, (posicion_x, posicion_y - 30))
+
+        #condiciones de mostrar
+        #utilzando el metodo determinarFichasValidas y mirando si el de la derecha, el de la izquierda o ambos son validos
+        #se pintan los botones y se les pone para escoger donde poner la ficha
+
+        # Crear boton y agregarlo a la lista
+        boton_left = pygame.Rect(50, 50, 30, 30)
+        boton_right = pygame.Rect(50, 50, 30, 30)
+
+        # Flecha hacia la izquierda
+        flecha_izquierda = [(0, 10), (10, 0), (10, 5), (20, 5), (20, 15), (10, 15), (10, 20)]
+
+        # Flecha hacia la derecha
+        flecha_derecha = [(20, 10), (10, 0), (10, 5), (0, 5), (0, 15), (10, 15), (10, 20)]
+
+
+        print(ficha_dibujar.esValida(tablero_logico)[1])
+        #izquierdo
+        if (ficha_dibujar.esValida(tablero_logico)[1][0]):
+            pygame.draw.polygon(self.screen, (0, 255, 0), [(posicion_x + 10 + x, posicion_y - 70 + y) for x, y in flecha_izquierda])
+            #pygame.draw.rect(self.screen, (0, 255, 0), flecha_izquierda, 3)
+        else:
+            pygame.draw.polygon(self.screen, (255, 0, 0), [(posicion_x + 10 + x, posicion_y - 70 + y) for x, y in flecha_izquierda])
+            #pygame.draw.rect(self.screen, (255, 0, 0), flecha_izquierda, 3)
+        #izquierdo
+        boton_left.center = (posicion_x + 20, posicion_y - 60)
+        self.lista_botones.append(boton_left)
+        #pygame.draw.rect(self.screen, boton_color_izq, boton_left)
+
+        if (ficha_dibujar.esValida(tablero_logico)[1][1]):
+            pygame.draw.polygon(self.screen, (0, 255, 0), [(posicion_x + 50 + x, posicion_y - 70 + y) for x, y in flecha_derecha])
+            #pygame.draw.rect(self.screen, (0, 255, 0), flecha_derecha, 3)
+        else:
+            pygame.draw.polygon(self.screen, (255, 0, 0), [(posicion_x + 50 + x, posicion_y - 70 + y) for x, y in flecha_derecha])
+            #pygame.draw.rect(self.screen, (0, 255, 0), flecha_derecha, 3)
+        #derecho
+        boton_right.center = (posicion_x + 55, posicion_y - 60)
+        self.lista_botones.append(boton_right)
+
+        #pygame.draw.rect(self.screen, boton_color_der, boton_right)
+
+        #verificar click
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                for boton in self.lista_botones:
+                    if boton.collidepoint(pos):
+                        boton_color = (0, 0, 0)
+        # Dibuja el botón en la pantalla con el nuevo color
+                    #pygame.draw.rect(self.screen, boton_color_izq, boton_left)
+                    #pygame.draw.rect(self.screen, boton_color_der, boton_right)
     def ponerFicha(self, tablero_fisico: deque, imagen_ficha, lado):
 
         #se transforma la imagen para que sea de menor tamaño
@@ -63,6 +117,36 @@ class GameDisplay:
                 #IMPORTANTE: se agrega la ficha al inicio
                 pygame.display.update()
 
+    
+
+    
+    def ventana_emergente(self, mensaje):
+        # Define el tamaño y posición de la ventana emergente
+        mensaje_ancho = 400
+        mensaje_alto = 200
+        mensaje_x = (self.ancho - mensaje_ancho) // 2
+        mensaje_y = (self.alto - mensaje_alto) // 2
+    
+        # Crea una capa separada para el mensaje emergente
+        capa_mensaje = pygame.Surface((mensaje_ancho, mensaje_alto))
+        capa_mensaje.fill((255, 255, 255))  # Rellena la capa con un color de fondo (en este caso blanco)
+        fuente = pygame.font.Font(None, 36)  # Define una fuente para el mensaje
+        texto = fuente.render(f"{mensaje}", True, (0, 0, 0))  # Crea un objeto de texto con el mensaje (usando "u" antes del mensaje para convertirlo en unicode)
+        capa_mensaje.blit(texto, (0, 0))  # Dibuja el texto en la capa de mensaje en la posición correcta
+    
+        # Crea un botón de cerrar en la capa de mensaje
+        boton_ancho = 80
+        boton_alto = 40
+        boton_x = mensaje_ancho - boton_ancho - 10
+        boton_y = 10
+        boton = pygame.Rect(boton_x, boton_y, boton_ancho, boton_alto)
+        pygame.draw.rect(capa_mensaje, (255, 0, 0), boton)  # Dibuja un rectángulo rojo como el botón de cerrar en la capa de mensaje
+        fuente_boton = pygame.font.Font(None, 24)
+        texto_boton = fuente_boton.render("Cerrar", True, (255, 255, 255))
+        capa_mensaje.blit(texto_boton, (boton_x + 10, boton_y + 10))  # Dibuja el texto del botón en la capa de mensaje en la posición correcta
+    
+        self.screen.blit(capa_mensaje, (mensaje_x, mensaje_y))
+        return boton
 
     def __init__(self, ancho, alto):
         self.ancho = ancho
@@ -95,10 +179,6 @@ class GameDisplay:
         # generación de fichas (PRUEBA)
         partida = Tablero()
         partida.generar_fichas()
-
-
-
-
         jugador_saque = partida.encontrarSaque()
 
         ficha_saque = jugador_saque.buscarFicha(6,6)
@@ -134,72 +214,16 @@ class GameDisplay:
             self.screen.blit(fondo, (posicion_x, posicion_y - 100))
 
             #Botones
-             #lista con los botones
+            #lista con los botones
 
             for j in range(0, len(fichas_jugador_principal)):
-
                 ficha_dibujar = fichas_jugador_principal[j]
-
-
                 ficha_rotada = pygame.transform.rotate(ficha_dibujar.getImagen(), 90)
                 if ficha_dibujar.esValida(tablero_logico)[0]:
-                    self.screen.blit(ficha_rotada, (posicion_x, posicion_y - 30))
-
-                    #condiciones de mostrar
-                    #utilzando el metodo determinarFichasValidas y mirando si el de la derecha, el de la izquierda o ambos son validos
-                    #se pintan los botones y se les pone para escoger donde poner la ficha
-
-                    # Crear boton y agregarlo a la lista
-                    boton_left = pygame.Rect(50, 50, 30, 30)
-                    boton_right = pygame.Rect(50, 50, 30, 30)
-
-                    # Flecha hacia la izquierda
-                    flecha_izquierda = [(0, 10), (10, 0), (10, 5), (20, 5), (20, 15), (10, 15), (10, 20)]
-
-                    # Flecha hacia la derecha
-                    flecha_derecha = [(20, 10), (10, 0), (10, 5), (0, 5), (0, 15), (10, 15), (10, 20)]
-
-
-                    print(ficha_dibujar.esValida(tablero_logico)[1])
-                    #izquierdo
-                    if (ficha_dibujar.esValida(tablero_logico)[1][0]):
-                        pygame.draw.polygon(self.screen, (0, 255, 0), [(posicion_x + 10 + x, posicion_y - 70 + y) for x, y in flecha_izquierda])
-                        #pygame.draw.rect(self.screen, (0, 255, 0), flecha_izquierda, 3)
-                    else:
-                        pygame.draw.polygon(self.screen, (255, 0, 0), [(posicion_x + 10 + x, posicion_y - 70 + y) for x, y in flecha_izquierda])
-                        #pygame.draw.rect(self.screen, (255, 0, 0), flecha_izquierda, 3)
-                    #izquierdo
-                    boton_left.center = (posicion_x + 20, posicion_y - 60)
-                    self.lista_botones.append(boton_left)
-                    #pygame.draw.rect(self.screen, boton_color_izq, boton_left)
-
-                    if (ficha_dibujar.esValida(tablero_logico)[1][1]):
-                        pygame.draw.polygon(self.screen, (0, 255, 0), [(posicion_x + 50 + x, posicion_y - 70 + y) for x, y in flecha_derecha])
-                        #pygame.draw.rect(self.screen, (0, 255, 0), flecha_derecha, 3)
-                    else:
-                        pygame.draw.polygon(self.screen, (255, 0, 0), [(posicion_x + 50 + x, posicion_y - 70 + y) for x, y in flecha_derecha])
-                        #pygame.draw.rect(self.screen, (0, 255, 0), flecha_derecha, 3)
-                    #derecho
-                    boton_right.center = (posicion_x + 55, posicion_y - 60)
-                    self.lista_botones.append(boton_right)
-
-                    #pygame.draw.rect(self.screen, boton_color_der, boton_right)
-
-                    #verificar click
-                    for event in pygame.event.get():
-                        if event.type == pygame.MOUSEBUTTONDOWN:
-                            pos = pygame.mouse.get_pos()
-                            for boton in self.lista_botones:
-                                if boton.collidepoint(pos):
-                                    boton_color = (0, 0, 0)
-# Dibuja el botón en la pantalla con el nuevo color
-                    #pygame.draw.rect(self.screen, boton_color_izq, boton_left)
-                    #pygame.draw.rect(self.screen, boton_color_der, boton_right)
-
+                    #posiciona las fichas, realiza varias traslaciones en base a unas posiciones iniciales
+                    self.posicionarFicha(ficha_rotada, posicion_x, posicion_y, ficha_dibujar, tablero_logico)
                 else:
                     self.screen.blit(ficha_rotada, (posicion_x, posicion_y))
-
-# Dibuja el botón en la pantalla con el nuevo color
 
                 posicion_x += 128 + separacion
 
@@ -236,7 +260,12 @@ class GameDisplay:
                     for i, boton in enumerate(self.lista_botones):
                         if boton.collidepoint(pos):
                             mi_ficha = datos_ficha[0]
-                            if i == 0: 
+                            coordenadas_boton = boton.center
+                            color = self.screen.get_at(coordenadas_boton)
+                            if color == (255, 0, 0, 255):
+                                mensaje = self.ventana_emergente("Jugada invalida") 
+                                break
+                            elif i == 0: 
                                 self.dibujar(mi_ficha, tablero_logico, tablero_fisico, "izquierdo", v=[-1,0])
                                 print("izquierdo")
                             elif i == 1:
@@ -258,7 +287,7 @@ class GameDisplay:
                         if lado_str == "izquierdo":
                             v_array = [-1,0]
                         self.dibujar(mi_ficha, tablero_logico, tablero_fisico, lado_str, v_array)
-
+                        
                         jugador_principal.getFichas().remove(mi_ficha)
                         generar_pov_jugador(jugador_principal.getFichas())
 
