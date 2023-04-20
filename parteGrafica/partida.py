@@ -263,8 +263,8 @@ class GameDisplay:
                             coordenadas_boton = boton.center
                             color = self.screen.get_at(coordenadas_boton)
                             if color == (255, 0, 0, 255):
-                                mensaje = self.ventana_emergente("Jugada invalida") 
-                                break
+                                print("jugada invalida")
+                                continue
                             elif i == 0: 
                                 self.dibujar(mi_ficha, tablero_logico, tablero_fisico, "izquierdo", v=[-1,0])
                                 print("izquierdo")
