@@ -41,3 +41,9 @@ class Tablero:
                 tupla_valores = ficha_jugador.getValores()
                 if sum(tupla_valores) == 12:
                     return jugador
+
+    def verEstado(self):
+        for jugador in self._jugadores:
+            print(f"{jugador.getNombre()}")
+            for ficha in jugador.getFichas():
+                print(ficha.getValores())
