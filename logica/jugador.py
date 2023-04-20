@@ -49,6 +49,10 @@ class Jugador:
             
         return listaValida
 
+
+    def getNombre(self):
+        return self._nombre
+
     #def seleccionarFicha(self.)
 '''
 ##Caso de prueba

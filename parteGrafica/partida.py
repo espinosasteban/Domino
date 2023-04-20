@@ -5,6 +5,7 @@ from random import randint
 from logica.jugador import Jugador
 from logica.rival import Rival
 import pygame
+from time import sleep
  
 class GameDisplay:
     def dibujar(self, mi_ficha, tablero_logico, tablero_fisico, lado, v=[0,-1]):
@@ -13,8 +14,7 @@ class GameDisplay:
         if mi_ficha.getValores()[v[0]] != tablero_logico[v[1]].getValores()[v[1]]:
             mi_ficha.voltearFicha()
         self.ponerFicha(tablero_fisico, mi_ficha.getImagen(), lado)
-        tablero_logico.append(mi_ficha)
-    
+
 
     def posicionarFicha(self, ficha_rotada, posicion_x, posicion_y, ficha_dibujar, tablero_logico):
         self.screen.blit(ficha_rotada, (posicion_x, posicion_y - 30))
@@ -44,7 +44,7 @@ class GameDisplay:
             #pygame.draw.rect(self.screen, (255, 0, 0), flecha_izquierda, 3)
         #izquierdo
         boton_left.center = (posicion_x + 20, posicion_y - 60)
-        self.lista_botones.append(boton_left)
+
         #pygame.draw.rect(self.screen, boton_color_izq, boton_left)
 
         if (ficha_dibujar.esValida(tablero_logico)[1][1]):
@@ -55,17 +55,14 @@ class GameDisplay:
             #pygame.draw.rect(self.screen, (0, 255, 0), flecha_derecha, 3)
         #derecho
         boton_right.center = (posicion_x + 55, posicion_y - 60)
-        self.lista_botones.append(boton_right)
+        self.lista_botones.append((boton_left, boton_right))
+        #se agrega una tupla a lista botones para que corresponda con lista_validas
+
 
         #pygame.draw.rect(self.screen, boton_color_der, boton_right)
 
-        #verificar click
-        for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                pos = pygame.mouse.get_pos()
-                for boton in self.lista_botones:
-                    if boton.collidepoint(pos):
-                        boton_color = (0, 0, 0)
+
+
         # Dibuja el botón en la pantalla con el nuevo color
                     #pygame.draw.rect(self.screen, boton_color_izq, boton_left)
                     #pygame.draw.rect(self.screen, boton_color_der, boton_right)
@@ -117,7 +114,12 @@ class GameDisplay:
                 #IMPORTANTE: se agrega la ficha al inicio
                 pygame.display.update()
 
-    
+            seleccionar = pygame.mixer.Sound(
+                os.path.join(os.path.dirname(__file__), "sonidos/seleccionar_lado_derecho.mp3"))
+            seleccionar.play()
+            tirar = pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), "sonidos/tirar_ficha0.mp3"))
+            tirar.play()
+
 
     
     def ventana_emergente(self, mensaje):
@@ -179,12 +181,18 @@ class GameDisplay:
         # generación de fichas (PRUEBA)
         partida = Tablero()
         partida.generar_fichas()
-        jugador_saque = partida.encontrarSaque()
 
-        ficha_saque = jugador_saque.buscarFicha(6,6)
-        jugador_saque.eliminarFicha(ficha_saque)
+        #primer turno
+        proximo_jugador = partida.encontrarSaque()
+        ficha_saque = proximo_jugador.buscarFicha(6,6)
+        proximo_jugador.eliminarFicha(ficha_saque)
 
         jugador_principal = partida.getJugadores()[0]
+
+        #siguiente turno
+        proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
+        proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
+
 
 
         # GENERACIÓN  DE BOTONES PARA PRUEBAS
@@ -232,64 +240,74 @@ class GameDisplay:
         generar_pov_jugador(jugador_principal.getFichas())
 
 
+
+
+
         while self.is_running:
-            fichas_validas = jugador_principal.determinarFichasValidas(tablero_logico)
-            if len(fichas_validas) == 0:
-                rival = partida.getJugadores()[randint(1,3)]
-
-            elif len(fichas_validas) > 0:
-                datos_ficha = fichas_validas[randint(0,len(fichas_validas)-1)]
-
-            lado = []
-            if len(fichas_validas) > 0:
-                tupla_condicion = datos_ficha[1]
-                if tupla_condicion[0]:
-                    lado.append("izquierdo")
-                if tupla_condicion[1]:
-                    lado.append("derecho")
-
+            fichas_validas = proximo_jugador.determinarFichasValidas(tablero_logico)
 
             # Procesar eventos
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     # Si el usuario cierra la ventana, establecer el estado a "cerrado"
                     self.is_running = False
-                # si le doy click al boton de la izquierda, entonces ponerficha a la izquierda
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    pos = pygame.mouse.get_pos()
-                    for i, boton in enumerate(self.lista_botones):
-                        if boton.collidepoint(pos):
-                            mi_ficha = datos_ficha[0]
-                            coordenadas_boton = boton.center
-                            color = self.screen.get_at(coordenadas_boton)
-                            if color == (255, 0, 0, 255):
-                                print("jugada invalida")
-                                continue
-                            elif i == 0: 
-                                self.dibujar(mi_ficha, tablero_logico, tablero_fisico, "izquierdo", v=[-1,0])
-                                print("izquierdo")
-                            elif i == 1:
-                                self.dibujar(mi_ficha, tablero_logico, tablero_fisico, "derecho")
-                                print("derecho")
-                            jugador_principal.getFichas().remove(mi_ficha)
-                            generar_pov_jugador(jugador_principal.getFichas())
+
+
+
+                #Turno de nosotros
+                if partida.getJugadores()[0] == proximo_jugador:
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        pos = pygame.mouse.get_pos()
+                        if len(fichas_validas) > 0:
+                            for i, tupla_boton in enumerate(self.lista_botones):
+                                mi_ficha = fichas_validas[i][0]
+                                if tupla_boton[0].collidepoint(pos):
+                                    coordenadas_boton = tupla_boton[0].center
+                                    color = self.screen.get_at(coordenadas_boton)
+                                    if color == (255, 0, 0, 255):
+                                        print("jugada invalida")
+                                        continue
+                                    else:
+                                        self.dibujar(mi_ficha, tablero_logico, tablero_fisico, "izquierdo", v=[-1,0] )
+                                        tablero_logico.appendleft(mi_ficha)
+                                        jugador_principal.getFichas().remove(mi_ficha)
+                                        generar_pov_jugador(jugador_principal.getFichas())
+                                        break
+
+                                elif tupla_boton[1].collidepoint(pos):
+                                    coordenadas_boton = tupla_boton[1].center
+                                    color = self.screen.get_at(coordenadas_boton)
+                                    if color == (255, 0, 0, 255):
+                                        print("jugada invalida")
+                                        continue
+                                    else:
+                                        self.dibujar(mi_ficha, tablero_logico, tablero_fisico, "derecho")
+                                        tablero_logico.append(mi_ficha)
+                                        jugador_principal.getFichas().remove(mi_ficha)
+                                        generar_pov_jugador(jugador_principal.getFichas())
+                                        break
+
+
         # Ciclo principal del juego
+                if not (partida.getJugadores()[0] == proximo_jugador):
+                    print(f"saca el {proximo_jugador.getNombre()}")
+                    sleep(1)
+                    print("Rival va a jugar...")
+                    sleep(2)
+
+
+
+
+
+
+
+
 
                 if event.type == pygame.MOUSEBUTTONDOWN and boton_rect.collidepoint(event.pos):
                     seleccionar = pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), "sonidos/seleccionar_lado_derecho.mp3"))
                     seleccionar.play()
                     tirar = pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), "sonidos/tirar_ficha0.mp3"))
-                    tirar.play()                
-                    if len(fichas_validas) > 0:
-                        mi_ficha = datos_ficha[0]
-                        lado_str = lado[randint(0,len(lado)-1)]
-                        v_array = [0,-1]
-                        if lado_str == "izquierdo":
-                            v_array = [-1,0]
-                        self.dibujar(mi_ficha, tablero_logico, tablero_fisico, lado_str, v_array)
-                        
-                        jugador_principal.getFichas().remove(mi_ficha)
-                        generar_pov_jugador(jugador_principal.getFichas())
+                    tirar.play()
 
             # Dibujar el fondo
 
