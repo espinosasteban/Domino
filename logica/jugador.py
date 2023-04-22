@@ -20,7 +20,10 @@ class Jugador:
 
     def determinarFichasValidas(self, tablero_logico) -> list: #Funcion que regresa una lista de tuplas con las fichas que se pueden jugar y un bool que indica el lado en que se puede jugar
         listaValida = []
-
+        for ficha in self.getFichas():
+            if ficha.esValida(tablero_logico)[0]:
+                listaValida.append((ficha, ficha.esValida(tablero_logico)[-1]))
+        """
         valor_izq = tablero_logico[0].getValores()[0] #El valor izquierdo de la ficha mas a la izquierda
         valor_der = tablero_logico[-1].getValores()[-1] #El valor derecho de la ficha mas a la derecha 
 
@@ -43,10 +46,9 @@ class Jugador:
             if valores[-1] == valor_der:
                 der = True
                 agregar = True
-
             if agregar: # Se agrega una tupla a la lista, con el valor de la ficha que se puede colocar y los lados en que se puede colocar 
                 listaValida.append((ficha, (izq, der)))
-            
+            """
         return listaValida
 
 
