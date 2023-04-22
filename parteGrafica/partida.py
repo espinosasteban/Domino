@@ -17,7 +17,7 @@ class GameDisplay:
 
 
     def posicionarFicha(self, ficha_rotada, posicion_x, posicion_y, ficha_dibujar, tablero_logico):
-        self.screen.blit(ficha_rotada, (posicion_x, posicion_y - 30))
+        self.screen.blit(ficha_rotada, (posicion_x, posicion_y - 30)) #dibuja la ficha en una posicion determinada 
 
         #condiciones de mostrar
         #utilzando el metodo determinarFichasValidas y mirando si el de la derecha, el de la izquierda o ambos son validos
@@ -257,7 +257,7 @@ class GameDisplay:
                 #Turno de nosotros
                 if partida.getJugadores()[0] == proximo_jugador:
                     fichas_validas = proximo_jugador.determinarFichasValidas(tablero_logico)
-                    if len(fichas_validas) == 0:
+                    if len(fichas_validas) == 0: #No tiene fichas para jugar
                         print("No tienes fichas para jugar")
                         sleep(1)
                         proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
@@ -265,10 +265,10 @@ class GameDisplay:
                         contador += 1
                         break
 
-                    else:
+                    else: #tiene fichas para jugar
                         if event.type == pygame.MOUSEBUTTONDOWN:
                             pos = pygame.mouse.get_pos()
-                            if len(fichas_validas) > 0:
+                            if len(fichas_validas) > 0: # se puede borrae
                                 for i, tupla_boton in enumerate(self.lista_botones):
                                     mi_ficha = fichas_validas[i][0]
                                     print(mi_ficha.getValores())
