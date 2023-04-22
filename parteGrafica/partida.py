@@ -245,6 +245,15 @@ class GameDisplay:
         contador = 0
         partida.verEstado()
         while self.is_running:
+            Ganado = False
+            for participante in partida.getJugadores(): #Mirar si alguien ganó
+                if len(participante.getFichas()) == 0:
+                    print(f"Ganó {participante.getNombre()}")
+                    Ganado = True
+                    break
+            
+            if Ganado == True: #romper si alguien ganó
+                break
             if contador == 4:
                 print("Nadie tenía más fichas")
                 break
