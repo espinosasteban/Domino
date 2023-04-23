@@ -222,8 +222,6 @@ class GameDisplay:
             fondo.fill((0, 100, 10))
             self.screen.blit(fondo, (posicion_x, posicion_y - 100))
 
-            #Botones
-            #lista con los botones
 
             for j in range(0, len(fichas_jugador_principal)):
                 ficha_dibujar = fichas_jugador_principal[j]
@@ -241,7 +239,25 @@ class GameDisplay:
         generar_pov_jugador(jugador_principal.getFichas())
 
 
-
+        #Boton de pasar
+        posBoton = (1000, 500)
+        #botn tamañó
+        tamBoton = (100,50)
+        BotonPass = pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(posBoton, tamBoton))
+        # Crear una fuente para el texto
+        font = pygame.font.Font(None, 30)
+        # Renderizar el texto en una superficie
+        text_surface = font.render('Pasar', True, (0, 0, 0))
+        # Obtener el rectángulo del texto
+        text_rect = text_surface.get_rect()
+        # Centrar el rectángulo del texto en el botón
+        text_rect.center = BotonPass.center
+        # Dibujar el texto en la pantalla
+        self.screen.blit(text_surface, text_rect)
+        """
+        # no se si debo actualizar la pantalla
+        pygame.display.flip()
+        """
         contador = 0
         partida.verEstado()
         while self.is_running:
@@ -277,6 +293,14 @@ class GameDisplay:
                     else:
                         if event.type == pygame.MOUSEBUTTONDOWN:
                             pos = pygame.mouse.get_pos()
+                            #boton de pasar
+                            if BotonPass.collidepoint(pos):
+                                proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
+                                proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
+                                #ver si hacer algo con el contador
+                                print("boton pasar clickeado")
+                                break
+                            
                             if len(fichas_validas) > 0:
                                 for i, tupla_boton in enumerate(self.lista_botones):
                                     mi_ficha = fichas_validas[i][0]
