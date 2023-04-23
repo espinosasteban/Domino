@@ -238,6 +238,13 @@ class GameDisplay:
         tablero_logico.append(ficha_saque)
         generar_pov_jugador(jugador_principal.getFichas())
 
+        def mostrarFichasRivales():
+            cord_x = 950
+            cord_y = 50
+            separa = 5
+            for fichas in partida.getJugadores()[1].getFichas():
+                pygame.draw.rect(self.screen, (255,255,255), (cord_x,cord_y,20,30))
+                cord_x += 20+separa
 
         #Boton de pasar
         posBoton = (1000, 500)
@@ -261,6 +268,10 @@ class GameDisplay:
         contador = 0
         partida.verEstado()
         while self.is_running:
+
+            #mostrar fichas
+            mostrarFichasRivales()
+            
             Ganado = False
             for participante in partida.getJugadores(): #Mirar si alguien ganó
                 if len(participante.getFichas()) == 0:
