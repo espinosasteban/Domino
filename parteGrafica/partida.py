@@ -233,6 +233,7 @@ class GameDisplay:
                     self.screen.blit(ficha_rotada, (posicion_x, posicion_y))
 
                 posicion_x += 128 + separacion
+            pygame.display.flip()
 
         self.ponerFicha(tablero_fisico, ficha_saque.getImagen(), "derecho")
         tablero_logico.append(ficha_saque)
@@ -251,6 +252,7 @@ class GameDisplay:
             for fichas in jugador.getFichas():
                 pygame.draw.rect(self.screen, (255,255,255), (cord_x,cord_y,20,30))
                 cord_x += 20+separa
+            pygame.display.flip()
 
         #Boton de pasar
         posBoton = (1000, 500)
