@@ -114,13 +114,10 @@ class GameDisplay:
                 #IMPORTANTE: se agrega la ficha al inicio
                 pygame.display.update()
 
-            seleccionar = pygame.mixer.Sound(
-                os.path.join(os.path.dirname(__file__), "sonidos/seleccionar_lado_derecho.mp3"))
+            seleccionar = pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), "sonidos/seleccionar_lado_derecho.mp3"))
             seleccionar.play()
             tirar = pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), "sonidos/tirar_ficha0.mp3"))
             tirar.play()
-
-
     
     def ventana_emergente(self, mensaje):
         # Define el tamaño y posición de la ventana emergente
@@ -319,6 +316,8 @@ class GameDisplay:
                                 proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
                                 proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
                                 #ver si hacer algo con el contador
+                                pasar = pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), "sonidos/pasar.mp3"))
+                                pasar.play()
                                 print("boton pasar clickeado")
                                 break
                             
