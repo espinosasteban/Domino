@@ -238,11 +238,17 @@ class GameDisplay:
         tablero_logico.append(ficha_saque)
         generar_pov_jugador(jugador_principal.getFichas())
 
-        def mostrarFichasRivales():
-            cord_x = 950
-            cord_y = 50
+        def mostrarFichasRivales(jugador, cord_x,cord_y):
+            #Dibujar fondo
+            fondo = pygame.Surface((200, 50))
+            fondo.fill((0, 100, 10))
+            self.screen.blit(fondo, (cord_x-10,cord_y-10))
+            #Poner texto
+            font = pygame.font.SysFont('Arial', 18)
+            text = font.render(f'Fichas del {jugador.getNombre()}', True, (255, 255, 255))
+            self.screen.blit(text, (cord_x, cord_y-30))
             separa = 5
-            for fichas in partida.getJugadores()[1].getFichas():
+            for fichas in jugador.getFichas():
                 pygame.draw.rect(self.screen, (255,255,255), (cord_x,cord_y,20,30))
                 cord_x += 20+separa
 
@@ -270,7 +276,9 @@ class GameDisplay:
         while self.is_running:
 
             #mostrar fichas
-            mostrarFichasRivales()
+            mostrarFichasRivales(partida.getJugadores()[3],950,50)   #zquierda
+            mostrarFichasRivales(partida.getJugadores()[2],475,50)   #medio
+            mostrarFichasRivales(partida.getJugadores()[1],50,50)   #derecha
             
             Ganado = False
             for participante in partida.getJugadores(): #Mirar si alguien ganó
