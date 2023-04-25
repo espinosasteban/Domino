@@ -251,6 +251,17 @@ class GameDisplay:
                 cord_x += 20+separa
             pygame.display.flip()
 
+        def mostrarFichasTurno(jugador, cord_x,cord_y):
+            #Dibujar fondo
+            fondo = pygame.Surface((200, 50))
+            fondo.fill((0, 128, 10))
+            self.screen.blit(fondo, (cord_x-10,cord_y-40))
+            #Poner texto
+            font = pygame.font.SysFont('Arial', 26)
+            text = font.render(f'Turno de {jugador.getNombre()}', True, (255, 255, 255))
+            self.screen.blit(text, (cord_x, cord_y-30))
+            pygame.display.flip()
+
         #Boton de pasar
         posBoton = (1000, 500)
         #botn tamañó
@@ -296,9 +307,15 @@ class GameDisplay:
                 if event.type == pygame.QUIT:
                     # Si el usuario cierra la ventana, establecer el estado a "cerrado"
                     self.is_running = False
+                """"
+                elif event.type == pygame.VIDEORESIZE:
+                    # Actualiza el tamaño de la ventana
+                    screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
+                pygame.display.update()"""
 
                 #Turno de nosotros
                 if partida.getJugadores()[0] == proximo_jugador:
+                    mostrarFichasTurno(proximo_jugador,200,550)
                     fichas_validas = proximo_jugador.determinarFichasValidas(tablero_logico)
                     if len(fichas_validas) == 0:
                         print("No tienes fichas para jugar")
@@ -370,7 +387,7 @@ class GameDisplay:
                         proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
 
                     else:
-
+                        mostrarFichasTurno(proximo_jugador,200,550)
                         print(f"saca el {proximo_jugador.getNombre()}")
                         sleep(1)
                         print(f"{proximo_jugador.getNombre()} va a jugar...")
