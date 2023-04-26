@@ -253,13 +253,29 @@ class GameDisplay:
 
         def mostrarFichasTurno(jugador, cord_x,cord_y):
             #Dibujar fondo
-            fondo = pygame.Surface((200, 50))
+            fondo = pygame.Surface((700, 50))
             fondo.fill((0, 128, 10))
             self.screen.blit(fondo, (cord_x-10,cord_y-40))
             #Poner texto
             font = pygame.font.SysFont('Arial', 26)
-            text = font.render(f'Turno de {jugador.getNombre()}', True, (255, 255, 255))
-            self.screen.blit(text, (cord_x, cord_y-30))
+
+            if partida.getJugadores()[0] == jugador:
+                    fichas_validas = jugador.determinarFichasValidas(tablero_logico)
+                    if len(fichas_validas) == 0:
+                        text = font.render("No tienes fichas para jugar, oprime el boton de pasar", True, (255, 255, 255))
+                        self.screen.blit(text, (cord_x, cord_y-30))
+                    else:
+                        text = font.render(f"Turno de {jugador.getNombre()}", True, (255, 255, 255))
+                        self.screen.blit(text, (cord_x, cord_y-30))
+            else:
+                fichas_validas = jugador.determinarFichasValidas(tablero_logico)
+                if len(fichas_validas) == 0:
+                    text = font.render(f"El {jugador.getNombre()} no tiene fichas para jugar. Saltando turno...", True, (255, 255, 255))
+                    self.screen.blit(text, (cord_x, cord_y-30))
+                else:
+                    text = font.render(f"Turno de {jugador.getNombre()}", True, (255, 255, 255))
+                    self.screen.blit(text, (cord_x, cord_y-30))
+                    
             pygame.display.flip()
 
         #Boton de pasar
@@ -317,13 +333,26 @@ class GameDisplay:
                 if partida.getJugadores()[0] == proximo_jugador:
                     mostrarFichasTurno(proximo_jugador,200,550)
                     fichas_validas = proximo_jugador.determinarFichasValidas(tablero_logico)
+                    
                     if len(fichas_validas) == 0:
+                        if event.type == pygame.MOUSEBUTTONDOWN:
+                            pos = pygame.mouse.get_pos()
+                            #boton de pasar
+                            if BotonPass.collidepoint(pos):
+                                proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
+                                proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
+                                #ver si hacer algo con el contador
+                                pasar = pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), "sonidos/pasar.mp3"))
+                                pasar.play()
+                                print("boton pasar clickeado")
+                                break
+                        """
                         print("No tienes fichas para jugar")
                         sleep(1)
                         proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
                         proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
                         contador += 1
-                        break
+                        break """
 
                     else:
                         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -379,15 +408,16 @@ class GameDisplay:
 
         # Ciclo principal del juego
                 if not (partida.getJugadores()[0] == proximo_jugador):
+                    mostrarFichasTurno(proximo_jugador,200,550)
                     partida.verEstado()
                     fichas_validas = proximo_jugador.determinarFichasValidas(tablero_logico)
                     if len(fichas_validas) == 0:
                         print(f"{proximo_jugador.getNombre()} no tiene fichas para jugar, se pasa al otro jugador")
+                        sleep(2)
                         proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
                         proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
 
                     else:
-                        mostrarFichasTurno(proximo_jugador,200,550)
                         print(f"saca el {proximo_jugador.getNombre()}")
                         sleep(1)
                         print(f"{proximo_jugador.getNombre()} va a jugar...")
