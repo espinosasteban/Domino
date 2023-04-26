@@ -236,7 +236,7 @@ class GameDisplay:
         tablero_logico.append(ficha_saque)
         generar_pov_jugador(jugador_principal.getFichas())
 
-        def mostrarFichasRivales(jugador, cord_x,cord_y):
+        def mostrarFichasRivales(jugador: Jugador, cord_x,cord_y):
             #Dibujar fondo
             fondo = pygame.Surface((200, 50))
             fondo.fill((0, 100, 10))
@@ -265,7 +265,7 @@ class GameDisplay:
                         text = font.render("No tienes fichas para jugar, oprime el boton de pasar", True, (255, 255, 255))
                         self.screen.blit(text, (cord_x, cord_y-30))
                     else:
-                        text = font.render(f"Turno de {jugador.getNombre()}", True, (255, 255, 255))
+                        text = font.render("Es tu turno!", True, (255, 255, 255))
                         self.screen.blit(text, (cord_x, cord_y-30))
             else:
                 fichas_validas = jugador.determinarFichasValidas(tablero_logico)
