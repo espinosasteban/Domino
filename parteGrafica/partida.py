@@ -188,17 +188,23 @@ class GameDisplay:
         self.screen.blit(capa_mensaje, (mensaje_x, mensaje_y))
         return boton
 
-    def __init__(self, ancho, alto):
-        self.ancho = ancho
-        self.alto = alto
+    def __init__(self, ancho=1200, alto=900):
         self.ruta_imagenes = os.path.join(os.path.dirname(__file__), "imagenes")
         self.lista_botones = []
 
         # Inicializar Pygame
         pygame.init()
 
+
+        info_pantalla = pygame.display.Info()
+        ancho_1 = info_pantalla.current_w
+        alto_1 = info_pantalla.current_h
+        self.ancho = ancho_1
+        self.alto = alto_1
+
+
         # Crear la ventana del juego
-        self.screen = pygame.display.set_mode((ancho, alto))
+        self.screen = pygame.display.set_mode((ancho_1, alto_1), pygame.FULLSCREEN)
 
         # Establecer el título de la ventana
         pygame.display.set_caption("Mi Juego")
