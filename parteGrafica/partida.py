@@ -155,13 +155,10 @@ class GameDisplay:
                 #IMPORTANTE: se agrega la ficha al inicio
                 pygame.display.update()
 
-            seleccionar = pygame.mixer.Sound(
-                os.path.join(os.path.dirname(__file__), "sonidos/seleccionar_lado_derecho.mp3"))
+            seleccionar = pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), "sonidos/seleccionar_lado_derecho.mp3"))
             seleccionar.play()
             tirar = pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), "sonidos/tirar_ficha0.mp3"))
             tirar.play()
-
-
     
     def ventana_emergente(self, mensaje):
         # Define el tamaño y posición de la ventana emergente
@@ -263,8 +260,6 @@ class GameDisplay:
             fondo.fill((0, 100, 10))
             self.screen.blit(fondo, (posicion_x, posicion_y - 100))
 
-            #Botones
-            #lista con los botones
 
             for j in range(0, len(fichas_jugador_principal)):
                 ficha_dibujar = fichas_jugador_principal[j]
@@ -276,16 +271,82 @@ class GameDisplay:
                     self.screen.blit(ficha_rotada, (posicion_x, posicion_y))
 
                 posicion_x += 128 + separacion
+            pygame.display.flip()
 
         self.ponerFicha(tablero_fisico, ficha_saque.getImagen(), "derecho", ficha_saque)
         tablero_logico.append(ficha_saque)
         generar_pov_jugador(jugador_principal.getFichas())
 
+        def mostrarFichasRivales(jugador: Jugador, cord_x,cord_y):
+            #Dibujar fondo
+            fondo = pygame.Surface((200, 50))
+            fondo.fill((0, 100, 10))
+            self.screen.blit(fondo, (cord_x-10,cord_y-10))
+            #Poner texto
+            font = pygame.font.SysFont('Arial', 18)
+            text = font.render(f'Fichas del {jugador.getNombre()}', True, (255, 255, 255))
+            self.screen.blit(text, (cord_x, cord_y-30))
+            separa = 5
+            for fichas in jugador.getFichas():
+                pygame.draw.rect(self.screen, (255,255,255), (cord_x,cord_y,20,30))
+                cord_x += 20+separa
+            pygame.display.flip()
 
+        def mostrarFichasTurno(jugador, cord_x,cord_y):
+            #Dibujar fondo
+            fondo = pygame.Surface((700, 50))
+            fondo.fill((0, 128, 10))
+            self.screen.blit(fondo, (cord_x-10,cord_y-40))
+            #Poner texto
+            font = pygame.font.SysFont('Arial', 26)
 
+            if partida.getJugadores()[0] == jugador:
+                    fichas_validas = jugador.determinarFichasValidas(tablero_logico)
+                    if len(fichas_validas) == 0:
+                        text = font.render("No tienes fichas para jugar, oprime el boton de pasar", True, (255, 255, 255))
+                        self.screen.blit(text, (cord_x, cord_y-30))
+                    else:
+                        text = font.render("Es tu turno!", True, (255, 255, 255))
+                        self.screen.blit(text, (cord_x, cord_y-30))
+            else:
+                fichas_validas = jugador.determinarFichasValidas(tablero_logico)
+                if len(fichas_validas) == 0:
+                    text = font.render(f"El {jugador.getNombre()} no tiene fichas para jugar. Saltando turno...", True, (255, 255, 255))
+                    self.screen.blit(text, (cord_x, cord_y-30))
+                else:
+                    text = font.render(f"Turno de {jugador.getNombre()}", True, (255, 255, 255))
+                    self.screen.blit(text, (cord_x, cord_y-30))
+                    
+            pygame.display.flip()
+
+        #Boton de pasar
+        posBoton = (1000, 500)
+        #botn tamañó
+        tamBoton = (100,50)
+        BotonPass = pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(posBoton, tamBoton))
+        # Crear una fuente para el texto
+        font = pygame.font.Font(None, 30)
+        # Renderizar el texto en una superficie
+        text_surface = font.render('Pasar', True, (0, 0, 0))
+        # Obtener el rectángulo del texto
+        text_rect = text_surface.get_rect()
+        # Centrar el rectángulo del texto en el botón
+        text_rect.center = BotonPass.center
+        # Dibujar el texto en la pantalla
+        self.screen.blit(text_surface, text_rect)
+        """
+        # no se si debo actualizar la pantalla
+        pygame.display.flip()
+        """
         contador = 0
         partida.verEstado()
         while self.is_running:
+
+            #mostrar fichas
+            mostrarFichasRivales(partida.getJugadores()[3],950,50)   #zquierda
+            mostrarFichasRivales(partida.getJugadores()[2],475,50)   #medio
+            mostrarFichasRivales(partida.getJugadores()[1],50,50)   #derecha
+            
             Ganado = False
             for participante in partida.getJugadores(): #Mirar si alguien ganó
                 if len(participante.getFichas()) == 0:
@@ -303,21 +364,51 @@ class GameDisplay:
                 if event.type == pygame.QUIT:
                     # Si el usuario cierra la ventana, establecer el estado a "cerrado"
                     self.is_running = False
+                """"
+                elif event.type == pygame.VIDEORESIZE:
+                    # Actualiza el tamaño de la ventana
+                    screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
+                pygame.display.update()"""
 
                 #Turno de nosotros
                 if partida.getJugadores()[0] == proximo_jugador:
+                    mostrarFichasTurno(proximo_jugador,200,550)
                     fichas_validas = proximo_jugador.determinarFichasValidas(tablero_logico)
+                    
+                    if len(fichas_validas) == 0:
+                        if event.type == pygame.MOUSEBUTTONDOWN:
+                            pos = pygame.mouse.get_pos()
+                            #boton de pasar
+                            if BotonPass.collidepoint(pos):
+                                proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
+                                proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
+                                #ver si hacer algo con el contador
+                                pasar = pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), "sonidos/pasar.mp3"))
+                                pasar.play()
+                                print("boton pasar clickeado")
+                                break
+                        """
                     if len(fichas_validas) == 0: #No tiene fichas para jugar
                         print("No tienes fichas para jugar")
                         sleep(1)
                         proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
                         proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
                         contador += 1
-                        break
+                        break """
 
                     else: #tiene fichas para jugar
                         if event.type == pygame.MOUSEBUTTONDOWN:
                             pos = pygame.mouse.get_pos()
+                            #boton de pasar
+                            if BotonPass.collidepoint(pos):
+                                proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
+                                proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
+                                #ver si hacer algo con el contador
+                                pasar = pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), "sonidos/pasar.mp3"))
+                                pasar.play()
+                                print("boton pasar clickeado")
+                                break
+                            
                             if len(fichas_validas) > 0: # se puede borrae
                                 for i, tupla_boton in enumerate(self.lista_botones):
                                     mi_ficha = fichas_validas[i][0]
@@ -359,15 +450,16 @@ class GameDisplay:
 
         # Ciclo principal del juego
                 if not (partida.getJugadores()[0] == proximo_jugador):
+                    mostrarFichasTurno(proximo_jugador,200,550)
                     partida.verEstado()
                     fichas_validas = proximo_jugador.determinarFichasValidas(tablero_logico)
                     if len(fichas_validas) == 0:
                         print(f"{proximo_jugador.getNombre()} no tiene fichas para jugar, se pasa al otro jugador")
+                        sleep(2)
                         proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
                         proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
 
                     else:
-
                         print(f"saca el {proximo_jugador.getNombre()}")
                         sleep(1)
                         print(f"{proximo_jugador.getNombre()} va a jugar...")
