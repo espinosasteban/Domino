@@ -1,7 +1,7 @@
 
 
 class Jugador:
-    def __init__(self, nombre, fichas): #Mirar si poner fichas en el constructor
+    def __init__(self, nombre, fichas): 
         self._nombre = nombre
         self._fichas = fichas
 

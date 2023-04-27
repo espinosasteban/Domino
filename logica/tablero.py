@@ -22,7 +22,7 @@ class Tablero:
                 fichas_totales.append(Ficha(i,j,pygame.image.load(os.path.join(ruta, f"ficha_{i}_{j}.png"))))
 
         for p in range(4):
-            mano = sample(fichas_totales, 7)
+            mano = sample(fichas_totales, 7) #Evita la repeticion de elementos
             if p == 0:
                 cls._jugadores.append(Jugador("Principal", deque(mano)))
             else:

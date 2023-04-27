@@ -48,6 +48,3 @@ class Ficha:
             valida = True
 
         return (valida, (izq, der))
-
-
-    

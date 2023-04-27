@@ -13,11 +13,11 @@ class GameDisplay:
     #en caso de ser para el lado izquierdo, se pasa un array inverso
         if mi_ficha.getValores()[v[0]] != tablero_logico[v[1]].getValores()[v[1]]:
             mi_ficha.voltearFicha()
-        self.ponerFicha(tablero_fisico, mi_ficha.getImagen(), lado)
+        self.ponerFicha(tablero_fisico, mi_ficha.getImagen(), lado, mi_ficha)
 
 
     def posicionarFicha(self, ficha_rotada, posicion_x, posicion_y, ficha_dibujar, tablero_logico):
-        self.screen.blit(ficha_rotada, (posicion_x, posicion_y - 30))
+        self.screen.blit(ficha_rotada, (posicion_x, posicion_y - 30)) #dibuja la ficha en una posicion determinada 
 
         #condiciones de mostrar
         #utilzando el metodo determinarFichasValidas y mirando si el de la derecha, el de la izquierda o ambos son validos
@@ -66,19 +66,27 @@ class GameDisplay:
         # Dibuja el botón en la pantalla con el nuevo color
                     #pygame.draw.rect(self.screen, boton_color_izq, boton_left)
                     #pygame.draw.rect(self.screen, boton_color_der, boton_right)
-    def ponerFicha(self, tablero_fisico: deque, imagen_ficha, lado):
+    def ponerFicha(self, tablero_fisico: deque, imagen_ficha, lado, mi_ficha):
+
+        
+        
 
         #se transforma la imagen para que sea de menor tamaño
         ficha_transformada = pygame.transform.scale(imagen_ficha, (int(imagen_ficha.get_width() / 4), int(imagen_ficha.get_height() / 4)))
+        
+
+        
+
         if len(tablero_fisico) == 0:
             #si el tablero está vacío, se coloca en el centro
+            ficha_transformada = pygame.transform.rotate(ficha_transformada, 90)
 
 
             #se muestra en el tablero en unas coordenadas que más o menos sea la mitad
             #(el centrado lo hice con prueba y error)
             self.screen.blit(ficha_transformada, (int(self.ancho/2)-ficha_transformada.get_width(),int(self.alto/2)-150))
 
-            tablero_fisico.append((ficha_transformada,(int(self.ancho/2)-ficha_transformada.get_width(),int(self.alto/2)-150)))
+            tablero_fisico.append((ficha_transformada,(int(self.ancho/2)-ficha_transformada.get_width(),int(self.alto/2)-150), True))
             #y se agrega a tablero físico de la siguiente forma: (imagen de la ficha transformada, (posicion_x, posicion_y)
             #esto con el objetivo de que después sea fácil obtener las coordenadas de dónde está la ficha dibujada.
             pygame.display.update()
@@ -87,15 +95,36 @@ class GameDisplay:
             #si ya hay una ficha en el tablero, entonces:
             #si la quiero poner a la derecha entonces mi ficha "anterior" es la ficha [-1] en el deque porque está
             #a la derecha del todo
+
+
             if lado == "derecho":
                 print("derecho")
+
+            
                 ficha_derecha = tablero_fisico[-1]
-                x_anterior, y_anterior = ficha_derecha[1] # se obtiene la tupla con las coordenadas
+                x_anterior, y_anterior = ficha_derecha[1]
+                 # se obtiene la tupla con las coordenadas
                 print(x_anterior, y_anterior)
-                self.screen.blit(ficha_transformada, (x_anterior+int((270/4)),y_anterior)) # se dibuja la nueva ficha
-                #para dibujar en x, tengo que correrla el ancho de la ficha anterior (256/4) y sumarle el x de la anterior.
-                #coloco + 270 para darle un poco de espacio y que no esté tan pegada.
-                tablero_fisico.append((ficha_transformada, (x_anterior+int((270/4)), y_anterior)))
+
+                if ficha_derecha[-1]: #si la anterior es doble
+                    self.screen.blit(ficha_transformada, (x_anterior+int((270/8)),y_anterior+20))
+                    tablero_fisico.append((ficha_transformada, (x_anterior+int((270/8)), y_anterior+20), False))
+
+                elif mi_ficha.esDoble():
+                        ficha_transformada = pygame.transform.rotate(ficha_transformada, 90)
+                        self.screen.blit(ficha_transformada, (x_anterior+int((270/4)),y_anterior - 20)) # se dibuja la nueva ficha
+                        #para dibujar en x, tengo que correrla el ancho de la ficha anterior (256/4) y sumarle el x de la anterior.
+                        #coloco + 270 para darle un poco de espacio y que no esté tan pegada.
+                        tablero_fisico.append((ficha_transformada, (x_anterior+int((270/4)), y_anterior-20), True))
+
+                else:
+                    self.screen.blit(ficha_transformada, (x_anterior+int((270/4)),y_anterior)) # se dibuja la nueva ficha
+                        #para dibujar en x, tengo que correrla el ancho de la ficha anterior (256/4) y sumarle el x de la anterior.
+                        #coloco + 270 para darle un poco de espacio y que no esté tan pegada.
+                    tablero_fisico.append((ficha_transformada, (x_anterior+int((270/4)), y_anterior), False))
+
+                    
+
                 #se agrega la ficha
 
                 pygame.display.update()
@@ -106,11 +135,23 @@ class GameDisplay:
                 ficha_derecha = tablero_fisico[0]
                 x_anterior, y_anterior = ficha_derecha[1]
 
+                if ficha_derecha[-1]:
+                     #si la ficha de la derecha (anterior) es doble
+                     self.screen.blit(ficha_transformada, (x_anterior - int((270 / 4)), y_anterior + 20))
+                     tablero_fisico.appendleft((ficha_transformada, (x_anterior - int((270 / 4)), y_anterior + 20), False))
 
-                self.screen.blit(ficha_transformada, (x_anterior - int((270 / 4)), y_anterior))
-                #acá en lugar de sumar hay que restar en x.
+                elif mi_ficha.esDoble():
+                    ficha_transformada = pygame.transform.rotate(ficha_transformada, 90)
 
-                tablero_fisico.appendleft((ficha_transformada, (x_anterior - int((270 / 4)), y_anterior)))
+                    self.screen.blit(ficha_transformada, (x_anterior - int((270 / 8)), y_anterior-20))
+                    #acá en lugar de sumar hay que restar en x.
+
+                    tablero_fisico.appendleft((ficha_transformada, (x_anterior - int((270 / 8)), y_anterior-20), True))
+                else:
+                    self.screen.blit(ficha_transformada, (x_anterior - int((270 / 4)), y_anterior))
+                    #acá en lugar de sumar hay que restar en x.
+
+                    tablero_fisico.appendleft((ficha_transformada, (x_anterior - int((270 / 4)), y_anterior), False))
                 #IMPORTANTE: se agrega la ficha al inicio
                 pygame.display.update()
 
@@ -232,7 +273,7 @@ class GameDisplay:
                 posicion_x += 128 + separacion
             pygame.display.flip()
 
-        self.ponerFicha(tablero_fisico, ficha_saque.getImagen(), "derecho")
+        self.ponerFicha(tablero_fisico, ficha_saque.getImagen(), "derecho", ficha_saque)
         tablero_logico.append(ficha_saque)
         generar_pov_jugador(jugador_principal.getFichas())
 
@@ -347,6 +388,7 @@ class GameDisplay:
                                 print("boton pasar clickeado")
                                 break
                         """
+                    if len(fichas_validas) == 0: #No tiene fichas para jugar
                         print("No tienes fichas para jugar")
                         sleep(1)
                         proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
@@ -354,7 +396,7 @@ class GameDisplay:
                         contador += 1
                         break """
 
-                    else:
+                    else: #tiene fichas para jugar
                         if event.type == pygame.MOUSEBUTTONDOWN:
                             pos = pygame.mouse.get_pos()
                             #boton de pasar
@@ -367,7 +409,7 @@ class GameDisplay:
                                 print("boton pasar clickeado")
                                 break
                             
-                            if len(fichas_validas) > 0:
+                            if len(fichas_validas) > 0: # se puede borrae
                                 for i, tupla_boton in enumerate(self.lista_botones):
                                     mi_ficha = fichas_validas[i][0]
                                     print(mi_ficha.getValores())
