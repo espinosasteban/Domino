@@ -194,10 +194,17 @@ class GameDisplay:
 
         # Inicializar Pygame
         pygame.init()
-        self.ancho = 1920
-        self.alto = 1080
+
+
+        info_pantalla = pygame.display.Info()
+        ancho_1 = info_pantalla.current_w
+        alto_1 = info_pantalla.current_h
+        self.ancho = ancho_1
+        self.alto = alto_1
+
+
         # Crear la ventana del juego
-        self.screen = pygame.display.set_mode((self.ancho, self.alto), pygame.FULLSCREEN)
+        self.screen = pygame.display.set_mode((ancho_1, alto_1), pygame.FULLSCREEN)
 
         # Establecer el título de la ventana
         pygame.display.set_caption("Mi Juego")
@@ -290,7 +297,6 @@ class GameDisplay:
                 pygame.draw.rect(self.screen, (255,255,255), (cord_x,cord_y,20,30))
                 cord_x += 20+separa
             pygame.display.flip()
-            return cord_x
 
         def mostrarFichasTurno(jugador, cord_x,cord_y):
             #Dibujar fondo
@@ -343,10 +349,17 @@ class GameDisplay:
         while self.is_running:
 
             #mostrar fichas
-            razon = (self.ancho - 380)/ 4
+            print(self.ancho)
+            print(self.alto)
+            razon = self.ancho / 4
             for i in range(3,0,-1):
+                print(razon)
                 mostrarFichasRivales(partida.getJugadores()[i], razon, 50)
-                razon += self.ancho / 4
+                razon += self.ancho / 3
+            #mostrarFichasRivales(partida.getJugadores()[3],950,50)   #zquierda
+            #mostrarFichasRivales(partida.getJugadores()[2],475,50)   #medio
+            #mostrarFichasRivales(partida.getJugadores()[1],50,50)   #derecha
+            
             Ganado = False
             for participante in partida.getJugadores(): #Mirar si alguien ganó
                 if len(participante.getFichas()) == 0:
