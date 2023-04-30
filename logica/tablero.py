@@ -47,3 +47,13 @@ class Tablero:
             print(f"{jugador.getNombre()}")
             for ficha in jugador.getFichas():
                 print(ficha.getValores())
+
+
+    def getGanadorPorPuntaje(self) -> Jugador:
+        ganador = self._jugadores[0]
+        for jugador in self._jugadores[1:]:
+            puntaje_jugador = jugador.calcularPuntos()
+            if puntaje_jugador < ganador.calcularPuntos():
+                ganador = jugador
+        return ganador
+

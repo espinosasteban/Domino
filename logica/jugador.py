@@ -55,6 +55,12 @@ class Jugador:
     def getNombre(self):
         return self._nombre
 
+    def calcularPuntos(self) -> int:
+        puntaje = 0
+        for ficha in self.getFichas():
+            puntaje += sum(ficha.getValores)
+        return puntaje
+
     #def seleccionarFicha(self.)
 '''
 ##Caso de prueba
