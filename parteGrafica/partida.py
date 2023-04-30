@@ -188,7 +188,7 @@ class GameDisplay:
         self.screen.blit(capa_mensaje, (mensaje_x, mensaje_y))
         return boton
 
-    def __init__(self, ancho=1200, alto=900):
+    def __init__(self):
         self.ruta_imagenes = os.path.join(os.path.dirname(__file__), "imagenes")
         self.lista_botones = []
 
@@ -340,25 +340,32 @@ class GameDisplay:
         """
         contador = 0
         partida.verEstado()
+        Ganado = False
         while self.is_running:
 
-            #mostrar fichas
-            razon = (self.ancho - 380)/ 4
-            for i in range(3,0,-1):
-                mostrarFichasRivales(partida.getJugadores()[i], razon, 50)
-                razon += self.ancho / 4
-            Ganado = False
-            for participante in partida.getJugadores(): #Mirar si alguien ganó
-                if len(participante.getFichas()) == 0:
-                    print(f"Ganó {participante.getNombre()}")
+
+
+
+            if not Ganado:
+                # mostrar fichas si nadie ha ganado
+                razon = (self.ancho - 380)/ 4
+                for i in range(3,0,-1):
+                    mostrarFichasRivales(partida.getJugadores()[i], razon, 50)
+                    razon += self.ancho / 4
+
+                for participante in partida.getJugadores(): #Mirar si alguien ganó
+                    if len(participante.getFichas()) == 0:
+                        pygame.mixer_music.stop()
+                        Ganado = True
+                        print(f"Ganó {participante.getNombre()}")
+
+                        self.dibujarGanador(participante, partida)
+                        break
+                if contador == 4:
                     Ganado = True
-                    break
-            
-            if Ganado == True: #romper si alguien ganó
-                break
-            if contador == 4:
-                print("Nadie tenía más fichas")
-                break
+                    ganador = partida.getGanadorPorPuntaje()
+                    self.dibujarGanador(ganador, partida)
+
             # Procesar eventos
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -371,134 +378,139 @@ class GameDisplay:
                 pygame.display.update()"""
 
                 #Turno de nosotros
-                if partida.getJugadores()[0] == proximo_jugador:
-                    mostrarFichasTurno(proximo_jugador,200,550)
-                    fichas_validas = proximo_jugador.determinarFichasValidas(tablero_logico)
-                    
-                    if len(fichas_validas) == 0:
-                        if event.type == pygame.MOUSEBUTTONDOWN:
-                            pos = pygame.mouse.get_pos()
-                            #boton de pasar
-                            if BotonPass.collidepoint(pos):
-                                proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
-                                proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
-                                #ver si hacer algo con el contador
-                                pasar = pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), "sonidos/pasar.mp3"))
-                                pasar.play()
-                                print("boton pasar clickeado")
-                                break
-                        """
-                    if len(fichas_validas) == 0: #No tiene fichas para jugar
-                        print("No tienes fichas para jugar")
-                        sleep(1)
-                        proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
-                        proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
-                        contador += 1
-                        break """
+                if not Ganado:
+                    if partida.getJugadores()[0] == proximo_jugador:
+                        mostrarFichasTurno(proximo_jugador,200,550)
+                        fichas_validas = proximo_jugador.determinarFichasValidas(tablero_logico)
 
-                    else: #tiene fichas para jugar
-                        if event.type == pygame.MOUSEBUTTONDOWN:
-                            pos = pygame.mouse.get_pos()
-                            #boton de pasar
-                            if BotonPass.collidepoint(pos):
-                                proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
-                                proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
-                                #ver si hacer algo con el contador
-                                pasar = pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), "sonidos/pasar.mp3"))
-                                pasar.play()
-                                print("boton pasar clickeado")
-                                break
-                            
-                            if len(fichas_validas) > 0: # se puede borrae
-                                for i, tupla_boton in enumerate(self.lista_botones):
-                                    mi_ficha = fichas_validas[i][0]
-                                    print(mi_ficha.getValores())
-                                    if tupla_boton[0].collidepoint(pos):
-                                        coordenadas_boton = tupla_boton[0].center
-                                        color = self.screen.get_at(coordenadas_boton)
-                                        if color == (255, 0, 0, 255):
-                                            print("jugada invalida")
-                                            continue
-                                        else:
-                                            self.dibujar(mi_ficha, tablero_logico, tablero_fisico, "izquierdo", v=[-1,0] )
-                                            tablero_logico.appendleft(mi_ficha)
+                        if len(fichas_validas) == 0:
+                            if event.type == pygame.MOUSEBUTTONDOWN:
+                                pos = pygame.mouse.get_pos()
+                                #boton de pasar
+                                if BotonPass.collidepoint(pos):
+                                    proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
+                                    proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
+                                    #ver si hacer algo con el contador
+                                    pasar = pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), "sonidos/pasar.mp3"))
+                                    pasar.play()
+                                    print("boton pasar clickeado")
+                                    break
+                            """
+                        if len(fichas_validas) == 0: #No tiene fichas para jugar
+                            print("No tienes fichas para jugar")
+                            sleep(1)
+                            proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
+                            proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
+                            contador += 1
+                            break """
 
-                                            jugador_principal.getFichas().remove(mi_ficha)
-                                            generar_pov_jugador(jugador_principal.getFichas())
-                                            proximo_jugador_indice = (partida.getJugadores().index(
-                                                proximo_jugador) + 1) % 4
-                                            proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
-                                            contador = 0
-                                            break
+                        else: #tiene fichas para jugar
+                            if event.type == pygame.MOUSEBUTTONDOWN:
+                                pos = pygame.mouse.get_pos()
+                                #boton de pasar
+                                if BotonPass.collidepoint(pos):
+                                    proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
+                                    proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
+                                    #ver si hacer algo con el contador
+                                    pasar = pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), "sonidos/pasar.mp3"))
+                                    pasar.play()
+                                    print("boton pasar clickeado")
+                                    break
 
-                                    elif tupla_boton[1].collidepoint(pos):
-                                        coordenadas_boton = tupla_boton[1].center
-                                        color = self.screen.get_at(coordenadas_boton)
-                                        if color == (255, 0, 0, 255):
-                                            print("jugada invalida")
-                                            continue
-                                        else:
-                                            self.dibujar(mi_ficha, tablero_logico, tablero_fisico, "derecho")
-                                            tablero_logico.append(mi_ficha)
-                                            jugador_principal.getFichas().remove(mi_ficha)
-                                            generar_pov_jugador(jugador_principal.getFichas())
-                                            proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
-                                            proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
-                                            contador = 0
-                                            break
+                                if len(fichas_validas) > 0: # se puede borrae
+                                    for i, tupla_boton in enumerate(self.lista_botones):
+                                        mi_ficha = fichas_validas[i][0]
+                                        print(mi_ficha.getValores())
+                                        if tupla_boton[0].collidepoint(pos):
+                                            coordenadas_boton = tupla_boton[0].center
+                                            color = self.screen.get_at(coordenadas_boton)
+                                            if color == (255, 0, 0, 255):
+                                                print("jugada invalida")
+                                                continue
+                                            else:
+                                                self.dibujar(mi_ficha, tablero_logico, tablero_fisico, "izquierdo", v=[-1,0] )
+                                                tablero_logico.appendleft(mi_ficha)
 
+                                                jugador_principal.getFichas().remove(mi_ficha)
+                                                generar_pov_jugador(jugador_principal.getFichas())
+                                                proximo_jugador_indice = (partida.getJugadores().index(
+                                                    proximo_jugador) + 1) % 4
+                                                proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
+                                                contador = 0
+                                                break
 
-        # Ciclo principal del juego
-                if not (partida.getJugadores()[0] == proximo_jugador):
-                    mostrarFichasTurno(proximo_jugador,200,550)
-                    partida.verEstado()
-                    fichas_validas = proximo_jugador.determinarFichasValidas(tablero_logico)
-                    if len(fichas_validas) == 0:
-                        print(f"{proximo_jugador.getNombre()} no tiene fichas para jugar, se pasa al otro jugador")
-                        sleep(2)
-                        proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
-                        proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
-
-                    else:
-                        print(f"saca el {proximo_jugador.getNombre()}")
-                        sleep(1)
-                        print(f"{proximo_jugador.getNombre()} va a jugar...")
-                        sleep(2)
-
-                        lado = []
-
-                        datos_ficha = fichas_validas[randint(0, len(fichas_validas) - 1)]
-                        tupla_condicion = datos_ficha[1]
-                        if tupla_condicion[0]:
-                            lado.append("izquierdo")
-                        if tupla_condicion[1]:
-                            lado.append("derecho")
-
-                        mi_ficha = datos_ficha[0]
-                        print(f"Valores rival: {mi_ficha.getValores()}")
-                        lado_str = lado[randint(0, len(lado) - 1)]
-                        if lado_str == "derecho":
-                            self.dibujar(mi_ficha,tablero_logico, tablero_fisico, "derecho")
-                            tablero_logico.append(mi_ficha)
-                            proximo_jugador.getFichas().remove(mi_ficha)
-                            generar_pov_jugador(jugador_principal.getFichas())
+                                        elif tupla_boton[1].collidepoint(pos):
+                                            coordenadas_boton = tupla_boton[1].center
+                                            color = self.screen.get_at(coordenadas_boton)
+                                            if color == (255, 0, 0, 255):
+                                                print("jugada invalida")
+                                                continue
+                                            else:
+                                                self.dibujar(mi_ficha, tablero_logico, tablero_fisico, "derecho")
+                                                tablero_logico.append(mi_ficha)
+                                                jugador_principal.getFichas().remove(mi_ficha)
+                                                generar_pov_jugador(jugador_principal.getFichas())
+                                                proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
+                                                proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
+                                                contador = 0
+                                                break
 
 
-                        elif lado_str == "izquierdo":
-                            self.dibujar(mi_ficha, tablero_logico, tablero_fisico, "izquierdo", v=[-1,0])
-                            tablero_logico.appendleft(mi_ficha)
-                            proximo_jugador.getFichas().remove(mi_ficha)
-                            generar_pov_jugador(jugador_principal.getFichas())
+            # Ciclo principal del juego
+                    if not (partida.getJugadores()[0] == proximo_jugador):
+                        mostrarFichasTurno(proximo_jugador,200,550)
+                        partida.verEstado()
+                        fichas_validas = proximo_jugador.determinarFichasValidas(tablero_logico)
+                        if len(fichas_validas) == 0:
+                            print(f"{proximo_jugador.getNombre()} no tiene fichas para jugar, se pasa al otro jugador")
+                            sleep(2)
+                            proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
+                            proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
 
-                        proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
-                        proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
-                        break
+                        else:
+                            print(f"saca el {proximo_jugador.getNombre()}")
+                            sleep(1)
+                            print(f"{proximo_jugador.getNombre()} va a jugar...")
+                            sleep(2)
 
-                if event.type == pygame.MOUSEBUTTONDOWN and boton_rect.collidepoint(event.pos):
-                    seleccionar = pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), "sonidos/seleccionar_lado_derecho.mp3"))
-                    seleccionar.play()
-                    tirar = pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), "sonidos/tirar_ficha0.mp3"))
-                    tirar.play()
+                            lado = []
+
+                            datos_ficha = fichas_validas[randint(0, len(fichas_validas) - 1)]
+                            tupla_condicion = datos_ficha[1]
+                            if tupla_condicion[0]:
+                                lado.append("izquierdo")
+                            if tupla_condicion[1]:
+                                lado.append("derecho")
+
+                            mi_ficha = datos_ficha[0]
+                            print(f"Valores rival: {mi_ficha.getValores()}")
+                            lado_str = lado[randint(0, len(lado) - 1)]
+                            if lado_str == "derecho":
+                                self.dibujar(mi_ficha,tablero_logico, tablero_fisico, "derecho")
+                                tablero_logico.append(mi_ficha)
+                                proximo_jugador.getFichas().remove(mi_ficha)
+                                generar_pov_jugador(jugador_principal.getFichas())
+
+
+                            elif lado_str == "izquierdo":
+                                self.dibujar(mi_ficha, tablero_logico, tablero_fisico, "izquierdo", v=[-1,0])
+                                tablero_logico.appendleft(mi_ficha)
+                                proximo_jugador.getFichas().remove(mi_ficha)
+                                generar_pov_jugador(jugador_principal.getFichas())
+
+                            proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
+                            proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
+                            break
+
+                    if event.type == pygame.MOUSEBUTTONDOWN and boton_rect.collidepoint(event.pos):
+                        seleccionar = pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), "sonidos/seleccionar_lado_derecho.mp3"))
+                        seleccionar.play()
+                        tirar = pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), "sonidos/tirar_ficha0.mp3"))
+                        tirar.play()
+                else:
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        self.is_running = False
+
 
             # Dibujar el fondo
 
@@ -508,3 +520,28 @@ class GameDisplay:
         # Salir de Pygame
         pygame.mixer.music.stop()
         pygame.quit()
+
+    def dibujarGanador(self, participante, partida):
+        fondo_relleno = pygame.Surface((1920, 1080))
+
+        fuente_ganar = pygame.font.Font(None, 70)
+        if participante == partida.getJugadores()[0]:
+
+            fondo_relleno.fill((0, 128, 10))
+            self.screen.blit(fondo_relleno, (0, 0))
+            sonido_ganar = pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), "sonidos/ganar.mp3"))
+            sonido_ganar.play()
+
+            text = fuente_ganar.render("Ganaste!", True,
+                                       (255, 255, 255))
+            self.screen.blit(text, (self.ancho // 2 - 100, self.alto // 2 - 50))
+        else:
+            fondo_relleno.fill((255, 0, 0))
+            self.screen.blit(fondo_relleno, (0, 0))
+            sonido_perder = pygame.mixer.Sound(
+                os.path.join(os.path.dirname(__file__), "sonidos/perder.mp3"))
+            sonido_perder.play()
+
+            text = fuente_ganar.render(f"Ganó {participante.getNombre()}", True,
+                                       (255, 255, 255))
+            self.screen.blit(text, (self.ancho // 2 - 120, self.alto // 2 - 80))
