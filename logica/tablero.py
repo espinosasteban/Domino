@@ -6,6 +6,7 @@ from logica.rival import Rival
 import pygame
 import os
 
+
 class Tablero:
     _jugadores = []
     _tablero = deque([])
@@ -19,10 +20,10 @@ class Tablero:
         for i in range(0, 7):
             for j in range(i, 7):
                 ruta = os.path.join(os.getcwd(), 'parteGrafica', 'imagenes')
-                fichas_totales.append(Ficha(i,j,pygame.image.load(os.path.join(ruta, f"ficha_{i}_{j}.png"))))
+                fichas_totales.append(Ficha(i, j, pygame.image.load(os.path.join(ruta, f"ficha_{i}_{j}.png"))))
 
         for p in range(4):
-            mano = sample(fichas_totales, 7) #Evita la repeticion de elementos
+            mano = sample(fichas_totales, 7)  # Evita la repeticion de elementos
             if p == 0:
                 cls._jugadores.append(Jugador("Principal", deque(mano)))
             else:
@@ -31,7 +32,7 @@ class Tablero:
                 fichas_totales.remove(elemento)
 
     @classmethod
-    def getJugadores(cls)-> list:
+    def getJugadores(cls) -> list:
         return cls._jugadores
 
     @classmethod
@@ -48,7 +49,6 @@ class Tablero:
             for ficha in jugador.getFichas():
                 print(ficha.getValores())
 
-
     def getGanadorPorPuntaje(self) -> Jugador:
         ganador = self._jugadores[0]
         for jugador in self._jugadores[1:]:
@@ -56,4 +56,25 @@ class Tablero:
             if puntaje_jugador < ganador.calcularPuntos():
                 ganador = jugador
         return ganador
+
+    @classmethod
+    def generarPartidaPrueba(cls):
+        ruta = os.path.join(os.getcwd(), 'parteGrafica', 'imagenes')
+        fichaP = Ficha(6,6, pygame.image.load(os.path.join(ruta, f"ficha_{6}_{6}.png")))
+
+        fichaP2 = Ficha(0, 0, pygame.image.load(os.path.join(ruta, f"ficha_{0}_{0}.png")))
+        cls._jugadores.append(Jugador("Principal",[fichaP, fichaP2]))
+
+        fichaR1 = Ficha(5,4, pygame.image.load(os.path.join(ruta, f"ficha_{5}_{4}.png")))
+        fichaR2 = Ficha(3, 4, pygame.image.load(os.path.join(ruta, f"ficha_{3}_{4}.png")))
+        fichaR3 = Ficha(1, 5, pygame.image.load(os.path.join(ruta, f"ficha_{1}_{1}.png")))
+
+        for i, ficha in enumerate([fichaR1, fichaR2, fichaR3]):
+            cls._jugadores.append(Rival(f"Rival{i+1}", [ficha]))
+
+
+
+
+
+
 
