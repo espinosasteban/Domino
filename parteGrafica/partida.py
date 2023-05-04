@@ -293,30 +293,46 @@ class GameDisplay:
             pygame.display.flip()
 
         def ponerFichaDoble(listaFichasValidas):
-            fichasDobles = []
-            for ficha in listaFichasValidas:
-                if ficha.esDoble():
-                    fichasDobles.append()
+            fichasDobles = [elemento[0] for elemento in listaFichasValidas if elemento[0].esDoble()] #poner que retorne esta lista
 
             #Si hay dos fichas dobles
             if len(fichasDobles) == 2:
-                #Boton de pasar
-                posBoton = (1100, 500) #cambiar
-                #botn tamañó
+                #Boton de pone ficha doble
+                posBoton = (1000, 420) #cambiar
+                #boton tamaño
                 tamBoton = (100,50)
-                BotonDoble = pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(posBoton, tamBoton))
+                BotonDoble = pygame.draw.rect(self.screen, (255,0,0), pygame.Rect(posBoton, tamBoton)) #ponerle un color como verde
                 # Crear una fuente para el texto
-                font = pygame.font.Font(None, 30)
+                font = pygame.font.Font(None, 22)
                 # Renderizar el texto en una superficie
-                text_surface = font.render('Poner fichas dobles', True, (0, 0, 0))
+                text_surface = font.render('Poner dobles', True, (0, 0, 0))
                 # Obtener el rectángulo del texto
                 text_rect = text_surface.get_rect()
                 # Centrar el rectángulo del texto en el botón
                 text_rect.center = BotonDoble.center
                 # Dibujar el texto en la pantalla
                 self.screen.blit(text_surface, text_rect)
+                pygame.display.flip()
+                return BotonDoble
 
-                
+            else: #si no hay fichas dobles - esto se podria borrar y poner que se coloree del mismo color que el tablero ese espacio
+                #Boton de pone ficha doble
+                posBoton = (1000, 420) #cambiar
+                #boton tamaño
+                tamBoton = (100,50)
+                BotonDoble = pygame.draw.rect(self.screen, (255,0,0), pygame.Rect(posBoton, tamBoton)) #ponerle un color como rojo
+                # Crear una fuente para el texto
+                font = pygame.font.Font(None, 22)
+                # Renderizar el texto en una superficie
+                text_surface = font.render('Poner dobles', True, (0, 0, 0))
+                # Obtener el rectángulo del texto
+                text_rect = text_surface.get_rect()
+                # Centrar el rectángulo del texto en el botón
+                text_rect.center = BotonDoble.center
+                # Dibujar el texto en la pantalla
+                self.screen.blit(text_surface, text_rect)
+                pygame.display.flip()
+                return BotonDoble
 
         def mostrarFichasTurno(jugador, cord_x,cord_y):
             #Dibujar fondo
@@ -434,6 +450,10 @@ class GameDisplay:
                                 pasar.play()
                                 print("boton pasar clickeado")
                                 break
+
+                            if ponerFichaDoble(fichas_validas).collidepoint(pos): # que recorra la lista y las fichas las ponga con el metodo poner ficha, y que cambie de turno
+                                print("boton poner dobles clickeado")
+                                pass
                             
                             if len(fichas_validas) > 0: # se puede borrae
                                 for i, tupla_boton in enumerate(self.lista_botones):
@@ -477,6 +497,7 @@ class GameDisplay:
         # Ciclo principal del juego
                 if not (partida.getJugadores()[0] == proximo_jugador):
                     mostrarFichasTurno(proximo_jugador,200,550)
+                    ponerFichaDoble(partida.getJugadores()[0].determinarFichasValidas(tablero_logico))
                     partida.verEstado()
                     fichas_validas = proximo_jugador.determinarFichasValidas(tablero_logico)
                     if len(fichas_validas) == 0:
