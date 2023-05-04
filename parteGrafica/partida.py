@@ -292,6 +292,32 @@ class GameDisplay:
                 cord_x += 20+separa
             pygame.display.flip()
 
+        def ponerFichaDoble(listaFichasValidas):
+            fichasDobles = []
+            for ficha in listaFichasValidas:
+                if ficha.esDoble():
+                    fichasDobles.append()
+
+            #Si hay dos fichas dobles
+            if len(fichasDobles) == 2:
+                #Boton de pasar
+                posBoton = (1100, 500) #cambiar
+                #botn tamañó
+                tamBoton = (100,50)
+                BotonDoble = pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(posBoton, tamBoton))
+                # Crear una fuente para el texto
+                font = pygame.font.Font(None, 30)
+                # Renderizar el texto en una superficie
+                text_surface = font.render('Poner fichas dobles', True, (0, 0, 0))
+                # Obtener el rectángulo del texto
+                text_rect = text_surface.get_rect()
+                # Centrar el rectángulo del texto en el botón
+                text_rect.center = BotonDoble.center
+                # Dibujar el texto en la pantalla
+                self.screen.blit(text_surface, text_rect)
+
+                
+
         def mostrarFichasTurno(jugador, cord_x,cord_y):
             #Dibujar fondo
             fondo = pygame.Surface((700, 50))
