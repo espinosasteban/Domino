@@ -313,8 +313,8 @@ class GameDisplay:
                 # Dibujar el texto en la pantalla
                 self.screen.blit(text_surface, text_rect)
                 pygame.display.flip()
-                return BotonDoble
-
+                return BotonDoble, fichasDobles
+            
             else: #si no hay fichas dobles - esto se podria borrar y poner que se coloree del mismo color que el tablero ese espacio
                 #Boton de pone ficha doble
                 posBoton = (1000, 420) #cambiar
@@ -332,7 +332,7 @@ class GameDisplay:
                 # Dibujar el texto en la pantalla
                 self.screen.blit(text_surface, text_rect)
                 pygame.display.flip()
-                return BotonDoble
+                return BotonDoble, fichasDobles
 
         def mostrarFichasTurno(jugador, cord_x,cord_y):
             #Dibujar fondo
@@ -363,7 +363,7 @@ class GameDisplay:
 
         #Boton de pasar
         posBoton = (1000, 500)
-        #botn tamañó
+        #boton tamaño
         tamBoton = (100,50)
         BotonPass = pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(posBoton, tamBoton))
         # Crear una fuente para el texto
@@ -437,7 +437,7 @@ class GameDisplay:
                         proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
                         contador += 1
                         break """
-
+                    
                     else: #tiene fichas para jugar
                         if event.type == pygame.MOUSEBUTTONDOWN:
                             pos = pygame.mouse.get_pos()
@@ -451,15 +451,65 @@ class GameDisplay:
                                 print("boton pasar clickeado")
                                 break
 
-                            if ponerFichaDoble(fichas_validas).collidepoint(pos): # que recorra la lista y las fichas las ponga con el metodo poner ficha, y que cambie de turno
-                                print("boton poner dobles clickeado")
-                                pass
+                            BotonDoble, fichasDobles = ponerFichaDoble(fichas_validas)
+                            if BotonDoble.collidepoint(pos): # que recorra la lista y las fichas las ponga con el metodo poner ficha, y que cambie de turno
+                                if len(fichasDobles)>=2: #condicionales por si tiene mas de una ficha doble valida o no
+                                    for mi_ficha in fichasDobles:
+                                        if mi_ficha.esValida(tablero_logico)[1][0]: #es valida en la izquierda
+                                            self.dibujar(mi_ficha, tablero_logico, tablero_fisico, "izquierdo", v=[-1,0] )
+                                            tablero_logico.appendleft(mi_ficha)
+
+                                            jugador_principal.getFichas().remove(mi_ficha)
+                                            generar_pov_jugador(jugador_principal.getFichas())
+                                            proximo_jugador_indice = (partida.getJugadores().index(
+                                                proximo_jugador) + 1) % 4
+                                            proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
+                                            contador = 0
+
+                                        elif mi_ficha.esValida(tablero_logico)[1][1]: #es valida en la derecha
+                                            self.dibujar(mi_ficha, tablero_logico, tablero_fisico, "derecho")
+                                            tablero_logico.append(mi_ficha)
+                                            jugador_principal.getFichas().remove(mi_ficha)
+                                            generar_pov_jugador(jugador_principal.getFichas())
+                                            proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
+                                            proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
+                                            contador = 0
+                                            
+                                    print("boton poner dobles clickeado") #aqui hacer que ponga las 2 fichas y rompa
+                                    break
+                                elif len(fichasDobles)>0: #caso de prueba que funcione, se puede borrar
+                                    for mi_ficha in fichasDobles:
+                                        if mi_ficha.esValida(tablero_logico)[1][0]: #es valida en la izquierda
+                                            self.dibujar(mi_ficha, tablero_logico, tablero_fisico, "izquierdo", v=[-1,0] )
+                                            tablero_logico.appendleft(mi_ficha)
+
+                                            jugador_principal.getFichas().remove(mi_ficha)
+                                            generar_pov_jugador(jugador_principal.getFichas())
+                                            proximo_jugador_indice = (partida.getJugadores().index(
+                                                proximo_jugador) + 1) % 4
+                                            proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
+                                            contador = 0
+
+                                        elif mi_ficha.esValida(tablero_logico)[1][1]: #es valida en la derecha
+                                            self.dibujar(mi_ficha, tablero_logico, tablero_fisico, "derecho")
+                                            tablero_logico.append(mi_ficha)
+                                            jugador_principal.getFichas().remove(mi_ficha)
+                                            generar_pov_jugador(jugador_principal.getFichas())
+                                            proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
+                                            proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
+                                            contador = 0
+                                    
+                                    print("boton poner dobles clickeado") # aqui que no pase nada
+                                    break
+                                else:
+                                    print("No tienes fichas dobles validas")
+                                    pass
                             
                             if len(fichas_validas) > 0: # se puede borrae
                                 for i, tupla_boton in enumerate(self.lista_botones):
                                     mi_ficha = fichas_validas[i][0]
                                     print(mi_ficha.getValores())
-                                    if tupla_boton[0].collidepoint(pos):
+                                    if tupla_boton[0].collidepoint(pos):        
                                         coordenadas_boton = tupla_boton[0].center
                                         color = self.screen.get_at(coordenadas_boton)
                                         if color == (255, 0, 0, 255):
