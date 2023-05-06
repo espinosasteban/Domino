@@ -416,6 +416,7 @@ class GameDisplay:
                 if partida.getJugadores()[0] == proximo_jugador:
                     mostrarFichasTurno(proximo_jugador,200,550)
                     fichas_validas = proximo_jugador.determinarFichasValidas(tablero_logico)
+                    BotonDoble, fichasDobles = ponerFichaDoble(fichas_validas) #Cuadno es nuestro turno se actualiza
                     
                     if len(fichas_validas) == 0:
                         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -451,7 +452,6 @@ class GameDisplay:
                                 print("boton pasar clickeado")
                                 break
 
-                            BotonDoble, fichasDobles = ponerFichaDoble(fichas_validas)
                             if BotonDoble.collidepoint(pos): # que recorra la lista y las fichas las ponga con el metodo poner ficha, y que cambie de turno
                                 if len(fichasDobles)==2: #condicionales por si tiene mas de una ficha doble valida o no
                                     for mi_ficha in fichasDobles:
