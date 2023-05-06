@@ -301,7 +301,7 @@ class GameDisplay:
                 posBoton = (1000, 420) #cambiar
                 #boton tamaño
                 tamBoton = (100,50)
-                BotonDoble = pygame.draw.rect(self.screen, (255,0,0), pygame.Rect(posBoton, tamBoton)) #ponerle un color como verde
+                BotonDoble = pygame.draw.rect(self.screen, (0,255,0), pygame.Rect(posBoton, tamBoton)) #ponerle un color como verde
                 # Crear una fuente para el texto
                 font = pygame.font.Font(None, 22)
                 # Renderizar el texto en una superficie
@@ -320,11 +320,11 @@ class GameDisplay:
                 posBoton = (1000, 420) #cambiar
                 #boton tamaño
                 tamBoton = (100,50)
-                BotonDoble = pygame.draw.rect(self.screen, (255,0,0), pygame.Rect(posBoton, tamBoton)) #ponerle un color como rojo
+                BotonDoble = pygame.draw.rect(self.screen, (0,128,10), pygame.Rect(posBoton, tamBoton)) #ponerle un color como rojo
                 # Crear una fuente para el texto
                 font = pygame.font.Font(None, 22)
                 # Renderizar el texto en una superficie
-                text_surface = font.render('Poner dobles', True, (0, 0, 0))
+                text_surface = font.render('Poner dobles', True, (0, 128, 10))
                 # Obtener el rectángulo del texto
                 text_rect = text_surface.get_rect()
                 # Centrar el rectángulo del texto en el botón
@@ -453,7 +453,7 @@ class GameDisplay:
 
                             BotonDoble, fichasDobles = ponerFichaDoble(fichas_validas)
                             if BotonDoble.collidepoint(pos): # que recorra la lista y las fichas las ponga con el metodo poner ficha, y que cambie de turno
-                                if len(fichasDobles)>=2: #condicionales por si tiene mas de una ficha doble valida o no
+                                if len(fichasDobles)==2: #condicionales por si tiene mas de una ficha doble valida o no
                                     for mi_ficha in fichasDobles:
                                         if mi_ficha.esValida(tablero_logico)[1][0]: #es valida en la izquierda
                                             self.dibujar(mi_ficha, tablero_logico, tablero_fisico, "izquierdo", v=[-1,0] )
@@ -485,20 +485,16 @@ class GameDisplay:
 
                                             jugador_principal.getFichas().remove(mi_ficha)
                                             generar_pov_jugador(jugador_principal.getFichas())
-                                            proximo_jugador_indice = (partida.getJugadores().index(
-                                                proximo_jugador) + 1) % 4
-                                            proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
-                                            contador = 0
-
+                                            
                                         elif mi_ficha.esValida(tablero_logico)[1][1]: #es valida en la derecha
                                             self.dibujar(mi_ficha, tablero_logico, tablero_fisico, "derecho")
                                             tablero_logico.append(mi_ficha)
                                             jugador_principal.getFichas().remove(mi_ficha)
-                                            generar_pov_jugador(jugador_principal.getFichas())
-                                            proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
-                                            proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
-                                            contador = 0
                                     
+                                    proximo_jugador_indice = (partida.getJugadores().index(
+                                    proximo_jugador) + 1) % 4
+                                    proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
+                                    contador = 0
                                     print("boton poner dobles clickeado") # aqui que no pase nada
                                     break
                                 else:
