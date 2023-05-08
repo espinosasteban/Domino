@@ -216,7 +216,7 @@ class GameDisplay:
 
         # generación de fichas (PRUEBA)
         partida = Tablero()
-        partida.generarPartidaPrueba()
+        partida.generar_fichas()
 
         # primer turno
         proximo_jugador = partida.encontrarSaque()
@@ -288,6 +288,48 @@ class GameDisplay:
             pygame.display.flip()
             return cord_x
 
+        def ponerFichaDoble(listaFichasValidas):
+            fichasDobles = [elemento[0] for elemento in listaFichasValidas if elemento[0].esDoble()] #poner que retorne esta lista
+
+            #Si hay dos fichas dobles
+            if len(fichasDobles) == 2:
+                #Boton de pone ficha doble
+                posBoton = (1120,500) #cambiar
+                #boton tamaño
+                tamBoton = (100,50)
+                BotonDoble = pygame.draw.rect(self.screen, (0,255,0), pygame.Rect(posBoton, tamBoton)) #ponerle un color como verde
+                # Crear una fuente para el texto
+                font = pygame.font.Font(None, 22)
+                # Renderizar el texto en una superficie
+                text_surface = font.render('Poner dobles', True, (0, 0, 0))
+                # Obtener el rectángulo del texto
+                text_rect = text_surface.get_rect()
+                # Centrar el rectángulo del texto en el botón
+                text_rect.center = BotonDoble.center
+                # Dibujar el texto en la pantalla
+                self.screen.blit(text_surface, text_rect)
+                pygame.display.flip()
+                return BotonDoble, fichasDobles
+            
+            else: #si no hay fichas dobles - esto se podria borrar y poner que se coloree del mismo color que el tablero ese espacio
+                #Boton de pone ficha doble
+                posBoton = (1120, 500) #cambiar
+                #boton tamaño
+                tamBoton = (100,50)
+                BotonDoble = pygame.draw.rect(self.screen, (0,128,10), pygame.Rect(posBoton, tamBoton)) #ponerle un color como rojo
+                # Crear una fuente para el texto
+                font = pygame.font.Font(None, 22)
+                # Renderizar el texto en una superficie
+                text_surface = font.render('Poner dobles', True, (0, 128, 10))
+                # Obtener el rectángulo del texto
+                text_rect = text_surface.get_rect()
+                # Centrar el rectángulo del texto en el botón
+                text_rect.center = BotonDoble.center
+                # Dibujar el texto en la pantalla
+                self.screen.blit(text_surface, text_rect)
+                pygame.display.flip()
+                return BotonDoble, fichasDobles
+
         def mostrarFichasTurno(jugador, cord_x, cord_y):
             # Dibujar fondo
             fondo = pygame.Surface((700, 50))
@@ -352,7 +394,7 @@ class GameDisplay:
                         pygame.mixer_music.stop()
                         Ganado = True
                         print(f"Ganó {participante.getNombre()}")
-
+                        #sleep(1.5)
                         self.dibujarGanador(participante, partida)
                         break
                 if contador == 4:
@@ -414,6 +456,7 @@ class GameDisplay:
                     if partida.getJugadores()[0] == proximo_jugador:
                         mostrarFichasTurno(proximo_jugador, 200, 550)
                         fichas_validas = proximo_jugador.determinarFichasValidas(tablero_logico)
+                        BotonDoble, fichasDobles = ponerFichaDoble(fichas_validas)
 
                         if len(fichas_validas) == 0:
                             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -455,7 +498,54 @@ class GameDisplay:
                                     print("boton pasar clickeado")
                                     contador += 1
                                     break
+                                if BotonDoble.collidepoint(pos): # que recorra la lista y las fichas las ponga con el metodo poner ficha, y que cambie de turno
+                                    if len(fichasDobles)==2: #condicionales por si tiene mas de una ficha doble valida o no
+                                        for mi_ficha in fichasDobles:
+                                            if mi_ficha.esValida(tablero_logico)[1][0]: #es valida en la izquierda
+                                                self.dibujar(mi_ficha, tablero_logico, tablero_fisico, "izquierdo", v=[-1,0] )
+                                                tablero_logico.appendleft(mi_ficha)
 
+                                                jugador_principal.getFichas().remove(mi_ficha)
+                                                generar_pov_jugador(jugador_principal.getFichas())
+                                                proximo_jugador_indice = (partida.getJugadores().index(
+                                                    proximo_jugador) + 1) % 4
+                                                proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
+                                                contador = 0
+
+                                            elif mi_ficha.esValida(tablero_logico)[1][1]: #es valida en la derecha
+                                                self.dibujar(mi_ficha, tablero_logico, tablero_fisico, "derecho")
+                                                tablero_logico.append(mi_ficha)
+                                                jugador_principal.getFichas().remove(mi_ficha)
+                                                generar_pov_jugador(jugador_principal.getFichas())
+                                                proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
+                                                proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
+                                                contador = 0
+                                                
+                                        print("boton poner dobles clickeado") #aqui hacer que ponga las 2 fichas y rompa
+                                        break
+                                    elif len(fichasDobles)>0: #caso de prueba que funcione, se puede borrar
+                                        for mi_ficha in fichasDobles:
+                                            if mi_ficha.esValida(tablero_logico)[1][0]: #es valida en la izquierda
+                                                self.dibujar(mi_ficha, tablero_logico, tablero_fisico, "izquierdo", v=[-1,0] )
+                                                tablero_logico.appendleft(mi_ficha)
+
+                                                jugador_principal.getFichas().remove(mi_ficha)
+                                                generar_pov_jugador(jugador_principal.getFichas())
+                                                
+                                            elif mi_ficha.esValida(tablero_logico)[1][1]: #es valida en la derecha
+                                                self.dibujar(mi_ficha, tablero_logico, tablero_fisico, "derecho")
+                                                tablero_logico.append(mi_ficha)
+                                                jugador_principal.getFichas().remove(mi_ficha)
+                                        
+                                        proximo_jugador_indice = (partida.getJugadores().index(
+                                        proximo_jugador) + 1) % 4
+                                        proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
+                                        contador = 0
+                                        print("boton poner dobles clickeado") # aqui que no pase nada
+                                        break
+                                    else:
+                                        print("No tienes fichas dobles validas")
+                                        pass
                                 for i, tupla_boton in enumerate(self.lista_botones):
                                     mi_ficha = fichas_validas[i][0]
                                     print(mi_ficha.getValores())
@@ -504,6 +594,7 @@ class GameDisplay:
                     # Ciclo principal del juego
                     if not (partida.getJugadores()[0] == proximo_jugador):
                         mostrarFichasTurno(proximo_jugador, 200, 550)
+                        ponerFichaDoble(partida.getJugadores()[0].determinarFichasValidas(tablero_logico))
                         partida.verEstado()
                         fichas_validas = proximo_jugador.determinarFichasValidas(tablero_logico)
                         if len(fichas_validas) == 0:

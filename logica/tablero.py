@@ -60,17 +60,25 @@ class Tablero:
     @classmethod
     def generarPartidaPrueba(cls):
         ruta = os.path.join(os.getcwd(), 'parteGrafica', 'imagenes')
-        fichaP = Ficha(6,6, pygame.image.load(os.path.join(ruta, f"ficha_{6}_{6}.png")))
+        fichaR1 = Ficha(6,6, pygame.image.load(os.path.join(ruta, f"ficha_{6}_{6}.png")))
+        ficha2R1 = Ficha(3,0, pygame.image.load(os.path.join(ruta, f"ficha_{3}_{0}.png")))
 
-        fichaP2 = Ficha(0, 0, pygame.image.load(os.path.join(ruta, f"ficha_{0}_{0}.png")))
-        cls._jugadores.append(Jugador("Principal",[fichaP, fichaP2]))
+        fichaR2 = Ficha(6, 1, pygame.image.load(os.path.join(ruta, f"ficha_{6}_{1}.png")))
+        ficha2R2 = Ficha(3,3, pygame.image.load(os.path.join(ruta, f"ficha_{3}_{3}.png")))
+        #cls._jugadores.append(Jugador("Principal",[fichaR1 fichaR2]))
 
-        fichaR1 = Ficha(5,4, pygame.image.load(os.path.join(ruta, f"ficha_{5}_{4}.png")))
-        fichaR2 = Ficha(3, 4, pygame.image.load(os.path.join(ruta, f"ficha_{3}_{4}.png")))
-        fichaR3 = Ficha(1, 5, pygame.image.load(os.path.join(ruta, f"ficha_{1}_{1}.png")))
+        #fichaR1 = Ficha(5,4, pygame.image.load(os.path.join(ruta, f"ficha_{5}_{4}.png")))
+        #fichaR2 = Ficha(3, 4, pygame.image.load(os.path.join(ruta, f"ficha_{3}_{4}.png")))
+        fichaR3 = Ficha(2, 6, pygame.image.load(os.path.join(ruta, f"ficha_{2}_{6}.png")))
+        ficha2R3 = Ficha(3,4, pygame.image.load(os.path.join(ruta, f"ficha_{3}_{4}.png")))
 
-        for i, ficha in enumerate([fichaR1, fichaR2, fichaR3]):
-            cls._jugadores.append(Rival(f"Rival{i+1}", [ficha]))
+        fichaP1 = Ficha(1,1, pygame.image.load(os.path.join(ruta, f"ficha_{1}_{1}.png")))
+        fichaP2 = Ficha(2,2, pygame.image.load(os.path.join(ruta, f"ficha_{2}_{2}.png")))
+
+        cls._jugadores.append(Jugador("Principal", [fichaP1, fichaP2]))
+        for i, ficha in enumerate([(fichaR1,ficha2R1), (fichaR2,ficha2R2), (fichaR3,ficha2R3)]):
+            cls._jugadores.append(Rival(f"Rival{i+1}", [ficha[0], ficha[1]]))
+
 
 
 
