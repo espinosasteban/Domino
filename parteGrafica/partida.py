@@ -504,23 +504,19 @@ class GameDisplay:
                                             if mi_ficha.esValida(tablero_logico)[1][0]: #es valida en la izquierda
                                                 self.dibujar(mi_ficha, tablero_logico, tablero_fisico, "izquierdo", v=[-1,0] )
                                                 tablero_logico.appendleft(mi_ficha)
-
                                                 jugador_principal.getFichas().remove(mi_ficha)
                                                 generar_pov_jugador(jugador_principal.getFichas())
-                                                proximo_jugador_indice = (partida.getJugadores().index(
-                                                    proximo_jugador) + 1) % 4
-                                                proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
-                                                contador = 0
 
                                             elif mi_ficha.esValida(tablero_logico)[1][1]: #es valida en la derecha
                                                 self.dibujar(mi_ficha, tablero_logico, tablero_fisico, "derecho")
                                                 tablero_logico.append(mi_ficha)
                                                 jugador_principal.getFichas().remove(mi_ficha)
                                                 generar_pov_jugador(jugador_principal.getFichas())
-                                                proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
-                                                proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
-                                                contador = 0
-                                                
+                                        
+                                        proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
+                                        proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
+                                        contador = 0
+                                                                                       
                                         print("boton poner dobles clickeado") #aqui hacer que ponga las 2 fichas y rompa
                                         break
                                     elif len(fichasDobles)>0: #caso de prueba que funcione, se puede borrar
