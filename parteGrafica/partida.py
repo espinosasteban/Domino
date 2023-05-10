@@ -593,6 +593,8 @@ class GameDisplay:
 
                     # Ciclo principal del juego
                     if not (partida.getJugadores()[0] == proximo_jugador):
+                        # Simular entrada del mouse
+                        pygame.mouse.set_pos(pygame.mouse.get_pos())
                         mostrarFichasTurno(proximo_jugador, 200, 550)
                         ponerFichaDoble(partida.getJugadores()[0].determinarFichasValidas(tablero_logico))
                         partida.verEstado()
