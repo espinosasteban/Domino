@@ -230,19 +230,8 @@ class GameDisplay:
         proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
         proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
 
-        # GENERACIÓN  DE BOTONES PARA PRUEBAS
-        boton_superficie = pygame.Surface((100, 50))
-        boton_superficie.fill((255, 255, 255))  # Establecer el color del botón
-
-        # Crear el rectángulo del botón derecho
-        boton_rect = boton_superficie.get_rect()
-        boton_rect.x = 40  # Establecer la coordenada x del botón
-        boton_rect.y = 40  # Establecer la coordenada y del botón
         self.screen.fill(self.background_color)
-        self.screen.blit(boton_superficie, boton_rect)
         pygame.display.update()
-
-        # crear el rectangulo del botón izquierdo
 
         # generación de fichas POV jugador
         def generar_pov_jugador(fichas_jugador_principal):
@@ -253,7 +242,7 @@ class GameDisplay:
             posicion_y = 700
             separacion = 10
             fondo = pygame.Surface((ancho_total_fichas + 128, 400))
-            fondo.fill((0, 100, 10))
+            fondo.fill((0, 128, 0))
             self.screen.blit(fondo, (posicion_x, posicion_y - 100))
 
             for j in range(0, len(fichas_jugador_principal)):
@@ -274,9 +263,9 @@ class GameDisplay:
 
         def mostrarFichasRivales(jugador: Jugador, cord_x, cord_y):
             # Dibujar fondo
-            fondo = pygame.Surface((200, 50))
+            fondo = pygame.Surface((200, 75))
             fondo.fill((0, 100, 10))
-            self.screen.blit(fondo, (cord_x - 10, cord_y - 10))
+            self.screen.blit(fondo, (cord_x - 10, cord_y - 35))
             # Poner texto
             font = pygame.font.SysFont('Arial', 18)
             text = font.render(f'Fichas del {jugador.getNombre()}', True, (255, 255, 255))
@@ -472,14 +461,6 @@ class GameDisplay:
                                     print("boton pasar clickeado")
                                     contador += 1
                                     break
-                            """
-                        if len(fichas_validas) == 0: #No tiene fichas para jugar
-                            print("No tienes fichas para jugar")
-                            sleep(1)
-                            proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
-                            proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
-                            contador += 1
-                            break """
 
                         else:  # tiene fichas para jugar
                             lista_dobles = list(filter(lambda x: x[0].esDoble(), fichas_validas))
@@ -636,14 +617,6 @@ class GameDisplay:
                             proximo_jugador_indice = (partida.getJugadores().index(proximo_jugador) + 1) % 4
                             proximo_jugador = partida.getJugadores()[proximo_jugador_indice]
                             break
-
-                    if event.type == pygame.MOUSEBUTTONDOWN and boton_rect.collidepoint(event.pos):
-                        seleccionar = pygame.mixer.Sound(
-                            os.path.join(os.path.dirname(__file__), "sonidos/seleccionar_lado_derecho.mp3"))
-                        seleccionar.play()
-                        tirar = pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), "sonidos/tirar_ficha0.mp3"))
-                        tirar.play()
-
 
                 else:
                     if event.type == pygame.MOUSEBUTTONDOWN:
