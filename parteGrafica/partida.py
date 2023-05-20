@@ -156,37 +156,6 @@ class GameDisplay:
             tirar = pygame.mixer.Sound(os.path.join(os.path.dirname(__file__), "sonidos/tirar_ficha0.mp3"))
             tirar.play()
 
-    def ventana_emergente(self, mensaje):
-        # Define el tamaño y posición de la ventana emergente
-        mensaje_ancho = 400
-        mensaje_alto = 200
-        mensaje_x = (self.ancho - mensaje_ancho) // 2
-        mensaje_y = (self.alto - mensaje_alto) // 2
-
-        # Crea una capa separada para el mensaje emergente
-        capa_mensaje = pygame.Surface((mensaje_ancho, mensaje_alto))
-        capa_mensaje.fill((255, 255, 255))  # Rellena la capa con un color de fondo (en este caso blanco)
-        fuente = pygame.font.Font(None, 36)  # Define una fuente para el mensaje
-        texto = fuente.render(f"{mensaje}", True, (
-            0, 0,
-            0))  # Crea un objeto de texto con el mensaje (usando "u" antes del mensaje para convertirlo en unicode)
-        capa_mensaje.blit(texto, (0, 0))  # Dibuja el texto en la capa de mensaje en la posición correcta
-
-        # Crea un botón de cerrar en la capa de mensaje
-        boton_ancho = 80
-        boton_alto = 40
-        boton_x = mensaje_ancho - boton_ancho - 10
-        boton_y = 10
-        boton = pygame.Rect(boton_x, boton_y, boton_ancho, boton_alto)
-        pygame.draw.rect(capa_mensaje, (255, 0, 0),
-                         boton)  # Dibuja un rectángulo rojo como el botón de cerrar en la capa de mensaje
-        fuente_boton = pygame.font.Font(None, 24)
-        texto_boton = fuente_boton.render("Cerrar", True, (255, 255, 255))
-        capa_mensaje.blit(texto_boton, (
-            boton_x + 10, boton_y + 10))  # Dibuja el texto del botón en la capa de mensaje en la posición correcta
-
-        self.screen.blit(capa_mensaje, (mensaje_x, mensaje_y))
-        return boton
 
     def __init__(self):
         self.ruta_imagenes = os.path.join(os.path.dirname(__file__), "imagenes")
@@ -366,12 +335,30 @@ class GameDisplay:
         # no se si debo actualizar la pantalla
         pygame.display.flip()
         """
+
+        # Boton de salir
+        posSalir = (70, 50)
+        # botn tamañó
+        tamBotonSalir = (100, 50)
+        BotonSalir = pygame.draw.rect(self.screen, (255, 255, 255), pygame.Rect(posSalir, tamBotonSalir))
+        # Crear una fuente para el texto
+        font = pygame.font.Font(None, 30)
+        # Renderizar el texto en una superficie
+        text_surface = font.render('Salir', True, (0, 0, 0))
+        # Obtener el rectángulo del texto
+        text_rect = text_surface.get_rect()
+        # Centrar el rectángulo del texto en el botón
+        text_rect.center = BotonSalir.center
+        # Dibujar el texto en la pantalla
+        self.screen.blit(text_surface, text_rect)
+
         contador = 0
         # partida.verEstado()
         Ganado = False
         while self.is_running:
-
             if not Ganado:
+
+
                 # mostrar fichas si nadie ha ganado
                 razon = (self.ancho - 380) / 4
                 for i in range(3, 0, -1):
@@ -433,6 +420,13 @@ class GameDisplay:
                 if event.type == pygame.QUIT:
                     # Si el usuario cierra la ventana, establecer el estado a "cerrado"
                     self.is_running = False
+
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    pos = pygame.mouse.get_pos()
+                    # boton de salir
+                    if BotonSalir.collidepoint(pos):
+                        self.is_running = False
+
                 """"
                 elif event.type == pygame.VIDEORESIZE:
                     # Actualiza el tamaño de la ventana
@@ -463,8 +457,6 @@ class GameDisplay:
                                     break
 
                         else:  # tiene fichas para jugar
-                            lista_dobles = list(filter(lambda x: x[0].esDoble(), fichas_validas))
-                            # TODO la funcionalidad de poner dos dobles al mismo tiempo
 
                             if event.type == pygame.MOUSEBUTTONDOWN:
                                 pos = pygame.mouse.get_pos()
