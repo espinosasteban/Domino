@@ -79,6 +79,21 @@ class Tablero:
         for i, ficha in enumerate([(fichaR1,ficha2R1), (fichaR2,ficha2R2), (fichaR3,ficha2R3)]):
             cls._jugadores.append(Rival(f"Rival{i+1}", [ficha[0], ficha[1]]))
 
+    @classmethod
+    def generarPartidaPrueba2(cls):
+        ruta = os.path.join(os.getcwd(), 'parteGrafica', 'imagenes')
+        fichaP = Ficha(6, 6, pygame.image.load(os.path.join(ruta, f"ficha_{6}_{6}.png")))
+
+        fichaP2 = Ficha(0, 0, pygame.image.load(os.path.join(ruta, f"ficha_{0}_{0}.png")))
+        cls._jugadores.append(Jugador("Principal", [fichaP, fichaP2]))
+
+        fichaR1 = Ficha(5, 4, pygame.image.load(os.path.join(ruta, f"ficha_{5}_{4}.png")))
+        fichaR2 = Ficha(3, 4, pygame.image.load(os.path.join(ruta, f"ficha_{3}_{4}.png")))
+        fichaR3 = Ficha(1, 5, pygame.image.load(os.path.join(ruta, f"ficha_{1}_{1}.png")))
+
+        for i, ficha in enumerate([fichaR1, fichaR2, fichaR3]):
+            cls._jugadores.append(Rival(f"Rival{i + 1}", [ficha]))
+
 
 
 
